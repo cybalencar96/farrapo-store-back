@@ -3,7 +3,12 @@ import cors from 'cors'
 import {
     signUp
 } from './controllers/users.js';
-
+import { auth } from './middlewares/auth.js'
+import { validateBody } from './middlewares/validateBody.js';
+import {
+    signUpSchema,
+    //getUserSchema,
+} from './schemas/users.js';
 const app = express()
 app.use(express.json());
 app.use(cors());
@@ -12,6 +17,7 @@ app.get('/status', (req,res) => {
     res.sendStatus(200)
 });
 
-app.post('/signup', signUp)
+app.post('/signup', validateBody(signUpSchema), signUp)
+// app.get('/user', auth, validateBody(getUserSchema), getUser)
 
 export default app;

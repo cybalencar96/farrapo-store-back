@@ -8,7 +8,6 @@ const connectionData = {
         rejectUnauthorized: false
     }
 }
-console.log(connectionData)
 
 const connection = new Pool(connectionData);
 
