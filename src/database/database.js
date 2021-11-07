@@ -1,5 +1,5 @@
 import connection from "./connection.js"
-import users from "./users.js"
+import items from "./items.js"
 
 export default function makeDbFactory() {
 
@@ -8,6 +8,6 @@ export default function makeDbFactory() {
     }
 
     return {
-        users,
+        items,
     }
 };
