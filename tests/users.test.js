@@ -6,8 +6,10 @@ import makeDbFactory from '../src/database/database.js';
 import {
     getFakeUser,
     getInvalidFakeUser,
+    getFakeUuid,
 } from '../src/utils/faker.js';
 import generatePassword from '../src/utils/generatePassword.js';
+
 const db = makeDbFactory();
 
 const fakeUser = getFakeUser();
@@ -21,10 +23,12 @@ afterAll(async () => {
 
 describe('USERS ENTITY', () => {
     let user;
+    let token;
 
     beforeEach(async () => {
         await db.clear();
         user = await db.users.add(fakeUser2);
+        token = await db.users.createSession(user.id)
     });
 
     describe('route POST /signup', () => {
@@ -78,19 +82,17 @@ describe('USERS ENTITY', () => {
         });
     });
 
-    /* describe('route GET /user', () => {
+    describe('route GET /user', () => {
         test('should return 401 when not token', async () => {
             const result = await supertest(app).get('/user');
+
             expect(result.status).toEqual(401);
-            expect(result.text).toEqual('missing token');
         });
 
         test('should return 401 when token not valid', async () => {
-            const fakeUUID = faker.datatype.uuid();
-
             const result = await supertest(app)
                 .get('/user')
-                .set('Authorization', `Bearer ${fakeUUID}`);
+                .set('Authorization', `Bearer ${getFakeUuid()}`);
 
             expect(result.status).toEqual(401);
             expect(result.text).toEqual('user not authenticated, try log in again');
@@ -103,14 +105,15 @@ describe('USERS ENTITY', () => {
 
             const userInfo = {
                 id: user.id,
-                name: validUser2.name,
-                email: validUser2.email,
+                name: fakeUser2.name,
+                email: fakeUser2.email,
+                token,
             };
 
             expect(result.status).toEqual(200);
             expect(result.body).toEqual(expect.objectContaining(userInfo));
         });
-    }); */
+    });
 
     // describe('route POST /log-out', () => {
     //     // TODO logout tests

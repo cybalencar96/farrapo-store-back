@@ -69,11 +69,7 @@ async function signIn(req, res) {
 }
 
 async function getUserAuthenticated(req, res) {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-
-    if (!token) {
-        return res.status(401).send('missing token');
-    }
+    const token = res.locals.token
 
     try {
         const user = await db.users.get('session', token);
@@ -96,10 +92,6 @@ async function getUserAuthenticated(req, res) {
 async function logOut(req, res) {
     const token = req.headers.authorization?.replace('Bearer ', '');
 
-    if (!token) {
-        return res.status(400).send('missing token');
-    }
-    
     try {
         await db.users.removeSessions('byToken', token);
         return res.sendStatus(200);

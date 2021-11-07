@@ -29,7 +29,12 @@ const signInSchema = joi.object ({
     password: joi.string().required(),
 });
 
+const getUserSchema = joi.object ({
+    authorization: joi.string().min(43).max(43).required(),
+}).unknown();
+
 export {
     signUpSchema,
     signInSchema,
+    getUserSchema,
 }

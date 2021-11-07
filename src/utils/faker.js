@@ -12,6 +12,10 @@ function generateValidGenderName() {
     if (randomInt === 3) return 'female';
 }
 
+function getFakeUuid() {
+    return faker.datatype.uuid()
+}
+
 function getFakeUser() {
     return {
         name: faker.name.findName(),
@@ -40,4 +44,5 @@ function getInvalidFakeUser() {
 export {
     getFakeUser,
     getInvalidFakeUser,
+    getFakeUuid,
 };
