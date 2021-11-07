@@ -1,5 +1,4 @@
 import faker from 'faker';
-import RandExp from 'randexp';
 import generatePassword from './generatePassword';
 
 function randomIntFromInterval(min, max) { // min and max included
@@ -30,7 +29,7 @@ function getFakeUser() {
         phone: randomIntFromInterval(100000000, 999999999),
         genderName: generateValidGenderName(),
         birthDate: randomIntFromInterval(1, Date.now()),
-        imageUrl: faker.datatype.imageUrl(),
+        imageUrl: faker.image.animals(),
     };
 }
 

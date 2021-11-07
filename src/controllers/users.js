@@ -23,6 +23,12 @@ async function signUp(req, res) {
             return res.status(409).send('email already exists');
         }
 
+        const gender = await db.genders.get(genderName);
+        if (!gender) {
+            return res.status(400).send('invalid genderName')
+        }
+
+
         const addedUser = await db.users.add({
             name,
             email,
@@ -31,7 +37,7 @@ async function signUp(req, res) {
             streetNumber,
             complement,
             phone,
-            genderName,
+            genderId: gender.id,
             birthDate,
             imageUrl,
         });

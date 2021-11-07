@@ -36,17 +36,18 @@ async function add(userInfo) {
 
     const result = await connection.query(`
             SELECT 
-                id,
-                name,
-                email,
-                zip_code, 
-                street_number,
-                complement,
-                phone,
-                gender_id, 
-                birth_date, 
-                image_url
+                users.id,
+                users.name,
+                users.email,
+                users. zip_code, 
+                users.street_number,
+                users.complement,
+                users.phone,
+                genders.name, 
+                users.birth_date, 
+                users.image_url
             FROM users
+            JOIN genders ON users.gender_id = genders.id
             WHERE users.email = '${email}' LIMIT 1;
     `);
 
