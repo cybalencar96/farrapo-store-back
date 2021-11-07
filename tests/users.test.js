@@ -7,7 +7,7 @@ import {
     getFakeUser,
     getInvalidFakeUser,
 } from '../src/utils/faker.js';
-
+import generatePassword from '../src/utils/generatePassword.js';
 const db = makeDbFactory();
 
 const fakeUser = getFakeUser();
@@ -53,53 +53,64 @@ describe('USERS ENTITY', () => {
         });
     });
 
-    // describe('route POST sign-in', () => {
-    //     test('should return 200 and token when user logged in', async () => {
-    //         const result = await supertest(app)
-    //             .post('/sign-in')
-    //             .send({
-    //                 email: validUser2.email,
-    //                 password: validUser2.password,
-    //             });
+    describe('route POST /signin', () => {
+        test('should return 401 when invalid email or password', async () => {
+            const result = await supertest(app)
+                .post('/signin')
+                .send({
+                    email: fakeUser2.email,
+                    password: generatePassword(),
+                });
 
-    //         expect(result.status).toEqual(200);
-    //         expect(result.body.token?.length).toEqual(36);
-    //     });
-    // });
+            expect(result.status).toEqual(401);
+        });
 
-    // describe('route GET /user', () => {
-    //     test('should return 401 when not token', async () => {
-    //         const result = await supertest(app).get('/user');
-    //         expect(result.status).toEqual(401);
-    //         expect(result.text).toEqual('missing token');
-    //     });
+        test('should return 200 and token when user logged in', async () => {
+            const result = await supertest(app)
+                .post('/signin')
+                .send({
+                    email: fakeUser2.email,
+                    password: fakeUser2.password,
+                });
 
-    //     test('should return 401 when token not valid', async () => {
-    //         const fakeUUID = faker.datatype.uuid();
+            expect(result.status).toEqual(200);
+            expect(result.body.token?.length).toEqual(36);
+        });
+    });
 
-    //         const result = await supertest(app)
-    //             .get('/user')
-    //             .set('Authorization', `Bearer ${fakeUUID}`);
+    /* describe('route GET /user', () => {
+        test('should return 401 when not token', async () => {
+            const result = await supertest(app).get('/user');
+            expect(result.status).toEqual(401);
+            expect(result.text).toEqual('missing token');
+        });
 
-    //         expect(result.status).toEqual(401);
-    //         expect(result.text).toEqual('user not authenticated, try log in again');
-    //     });
+        test('should return 401 when token not valid', async () => {
+            const fakeUUID = faker.datatype.uuid();
 
-    //     test('should return 200 and userInfo token valid', async () => {
-    //         const result = await supertest(app)
-    //             .get('/user')
-    //             .set('Authorization', `Bearer ${token}`);
+            const result = await supertest(app)
+                .get('/user')
+                .set('Authorization', `Bearer ${fakeUUID}`);
 
-    //         const userInfo = {
-    //             id: user.id,
-    //             name: validUser2.name,
-    //             email: validUser2.email,
-    //         };
+            expect(result.status).toEqual(401);
+            expect(result.text).toEqual('user not authenticated, try log in again');
+        });
 
-    //         expect(result.status).toEqual(200);
-    //         expect(result.body).toEqual(expect.objectContaining(userInfo));
-    //     });
-    // });
+        test('should return 200 and userInfo token valid', async () => {
+            const result = await supertest(app)
+                .get('/user')
+                .set('Authorization', `Bearer ${token}`);
+
+            const userInfo = {
+                id: user.id,
+                name: validUser2.name,
+                email: validUser2.email,
+            };
+
+            expect(result.status).toEqual(200);
+            expect(result.body).toEqual(expect.objectContaining(userInfo));
+        });
+    }); */
 
     // describe('route POST /log-out', () => {
     //     // TODO logout tests

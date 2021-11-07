@@ -5,10 +5,6 @@ function randomIntFromInterval(min, max) { // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-const scrmRegex = /[0-9]{2}\.[A-Z]{2}\.[0-9]{6}/;
-const invalidScrmRegex = /[0-9]{3}\.[A-Z]{2}\.[0-9]{2}/;
-const siteRegex = /[A-Z]{3,4} [A-Z]{2,3}/;
-
 function generateValidGenderName() {
     const randomInt = randomIntFromInterval(1,3)
     if (randomInt === 1) return 'not_said';
@@ -16,7 +12,7 @@ function generateValidGenderName() {
     if (randomInt === 3) return 'female';
 }
 
-function getFakeUser(genderId) {
+function getFakeUser() {
     return {
         name: faker.name.findName(),
         email: faker.internet.email(),

@@ -1,12 +1,14 @@
 import express from 'express'
 import cors from 'cors'
 import {
-    signUp
+    signUp,
+    signIn,
 } from './controllers/users.js';
 import { auth } from './middlewares/auth.js'
 import { validateBody } from './middlewares/validateBody.js';
 import {
     signUpSchema,
+    signInSchema,
     //getUserSchema,
 } from './schemas/users.js';
 
@@ -21,6 +23,7 @@ app.get('/status', (req,res) => {
 });
 
 app.post('/signup', validateBody(signUpSchema), signUp)
+app.post('/signin', validateBody(signInSchema), auth, signIn)
 // app.get('/user', auth, validateBody(getUserSchema), getUser)
 
 
