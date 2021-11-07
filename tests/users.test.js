@@ -115,7 +115,18 @@ describe('USERS ENTITY', () => {
         });
     });
 
-    // describe('route POST /log-out', () => {
-    //     // TODO logout tests
-    // });
+    describe('route POST /log-out', () => {
+        test('should return 401 when not token', async () => {
+            const result = await supertest(app).post('/logout')
+
+            expect(result.status).toEqual(401)
+        })
+
+        test('should return 200 when logged out', async () => {
+            const result = await supertest(app).post('/logout')
+                .set('Authorization', `Bearer ${token}`)
+
+            expect(result.status).toEqual(200)
+        })
+    });
 });

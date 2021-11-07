@@ -90,10 +90,11 @@ async function getUserAuthenticated(req, res) {
 }
 
 async function logOut(req, res) {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const token = res.locals.token
 
     try {
         await db.users.removeSessions('byToken', token);
+        
         return res.sendStatus(200);
     } catch (error) {
         console.log(error);

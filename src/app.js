@@ -3,7 +3,8 @@ import cors from 'cors'
 import {
     signUp,
     signIn,
-    getUserAuthenticated
+    getUserAuthenticated,
+    logOut,
 } from './controllers/users.js';
 import { auth } from './middlewares/auth.js'
 import {
@@ -13,10 +14,8 @@ import {
 import {
     signUpSchema,
     signInSchema,
-    getUserSchema,
+    getAuthorizationSchema
 } from './schemas/users.js';
-
-import connection from './database/connection.js';
 
 const app = express()
 app.use(express.json());
@@ -26,17 +25,9 @@ app.get('/status', (req,res) => {
     res.sendStatus(200)
 });
 
-app.post('/signup', validateBody(signUpSchema), signUp)
-app.post('/signin', validateBody(signInSchema), auth, signIn)
-app.get('/user', validateHeaders(getUserSchema), getUserAuthenticated)
+app.post('/signup', validateBody(signUpSchema), signUp);
+app.post('/signin', validateBody(signInSchema), auth, signIn);
+app.post('/logout', validateHeaders(getAuthorizationSchema), logOut);
+app.get('/user', validateHeaders(getAuthorizationSchema), getUserAuthenticated);
 
-
-app.get('/teste', async (req,res) => {
-    // const result = await connection.query(`UPDATE users SET gender_id =1;`) 
-    const result = await connection.query(`SELECT * FROM genders ;`) 
-     
-    
-
-    res.send(result.rows)
-})
 export default app;
