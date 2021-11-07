@@ -15,20 +15,19 @@ const fakeUser2 = getFakeUser();
 const invalidFakeUser = getInvalidFakeUser();
 
 afterAll(async () => {
-    await db.clear()
+    await db.clear();
     db.endConnection();
 });
 
 describe('USERS ENTITY', () => {
     let user;
+
     beforeEach(async () => {
         await db.clear();
-
         user = await db.users.add(fakeUser2);
     });
 
-
-    describe('route POST /sign-up', () => {
+    describe('route POST /signup', () => {
         test('should return 400 when invalid body', async () => {
             const result = await supertest(app)
                 .post('/signup')

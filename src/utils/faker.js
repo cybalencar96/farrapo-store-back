@@ -10,15 +10,13 @@ const invalidScrmRegex = /[0-9]{3}\.[A-Z]{2}\.[0-9]{2}/;
 const siteRegex = /[A-Z]{3,4} [A-Z]{2,3}/;
 
 function generateValidGenderName() {
-    const randomInt = randomIntFromInterval(1,5)
+    const randomInt = randomIntFromInterval(1,3)
     if (randomInt === 1) return 'not_said';
     if (randomInt === 2) return 'male';
     if (randomInt === 3) return 'female';
-    if (randomInt === 4) return 'binary';
-    if (randomInt === 5) return 'trans';
 }
 
-function getFakeUser() {
+function getFakeUser(genderId) {
     return {
         name: faker.name.findName(),
         email: faker.internet.email(),
@@ -26,8 +24,9 @@ function getFakeUser() {
         zipCode: randomIntFromInterval(10000000,99999999),
         streetNumber: randomIntFromInterval(1, 10000),
         complement: faker.lorem.words(3),
-        phone: randomIntFromInterval(100000000, 999999999),
+        phone: String(randomIntFromInterval(100000000, 999999999)),
         genderName: generateValidGenderName(),
+        genderId: randomIntFromInterval(1,3), // for .tests purposes
         birthDate: randomIntFromInterval(1, Date.now()),
         imageUrl: faker.image.animals(),
     };

@@ -31,7 +31,17 @@ async function add(userInfo) {
             birth_date, 
             image_url) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-        [name, email, hash, zipCode, streetNumber, complement, phone,genderId,birthDate, imageUrl],
+        [   name, 
+            email, 
+            hash, 
+            zipCode, 
+            streetNumber, 
+            complement, 
+            phone, 
+            genderId, 
+            birthDate, 
+            imageUrl
+        ],
     );
 
     const result = await connection.query(`

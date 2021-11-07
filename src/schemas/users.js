@@ -17,10 +17,11 @@ const signUpSchema = joi.object ({
     zipCode: joi.number().min(minZipCode).max(maxZipCode).required(),
     phone: joi.string().pattern(phoneRegex).max(12).required(),
     genderName: joi.string().allow('not_said', 'male', 'female', 'binary', 'trans').required(),
+    genderId: joi.number(),
     birthDate: joi.number().positive().max(Date.now()).required(),
-    imageUrl: joi.string().pattern(imageUrlRegex),
+    imageUrl: joi.string().allow(''),
     streetNumber: joi.number().positive().required(),
-    complement: joi.string(),
+    complement: joi.string().allow(''),
 })
 
 export {
