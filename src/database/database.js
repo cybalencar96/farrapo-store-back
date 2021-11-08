@@ -2,6 +2,9 @@ import connection from "./connection.js"
 import items from "./items.js"
 import users from "./users.js"
 import genders from './genders.js';
+import categories from "./categories.js";
+import colors from "./colors.js";
+import sizes from "./sizes.js";
 
 export default function makeDbFactory() {
 
@@ -37,6 +40,9 @@ export default function makeDbFactory() {
         items,
         users,
         genders,
+        categories,
+        colors,
+        sizes,
         insertIntoTable,
         endConnection,
         clear,

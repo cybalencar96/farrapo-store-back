@@ -3,13 +3,16 @@ import cors from 'cors'
 import {
     signUp
 } from './controllers/users.js';
-import { getItems, addItems } from './controllers/homepage.js';
+import { getHomepageItems, addItems } from './controllers/items.js';
 import { auth } from './middlewares/auth.js'
 import { validateBody } from './middlewares/validateBody.js';
 import {
     signUpSchema,
     //getUserSchema,
 } from './schemas/users.js';
+import {
+    itemsSchema
+} from "./schemas/items.js"
 
 import connection from './database/connection.js';
 
@@ -22,12 +25,11 @@ app.get('/status', (req,res) => {
 });
 
 app.post('/signup', signUp);
-
-app.get('/items', getItems)
-app.post('/items', addItems);
 app.post('/signup', validateBody(signUpSchema), signUp)
 // app.get('/user', auth, validateBody(getUserSchema), getUser)
 
+app.post('/items', validateBody(itemsSchema), addItems);
+app.get('/items/homepage', getHomepageItems);
 
 app.get('/teste', async (req,res) => {
     // const result = await connection.query(`UPDATE users SET gender_id =1;`) 

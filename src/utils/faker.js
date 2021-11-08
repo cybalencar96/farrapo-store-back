@@ -1,9 +1,6 @@
 import faker from 'faker';
 import generatePassword from './generatePassword';
-
-function randomIntFromInterval(min, max) { // min and max included
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
+import { randomIntFromInterval } from './sharedFunctions';
 
 const scrmRegex = /[0-9]{2}\.[A-Z]{2}\.[0-9]{6}/;
 const invalidScrmRegex = /[0-9]{3}\.[A-Z]{2}\.[0-9]{2}/;
@@ -39,7 +36,6 @@ function getInvalidFakeUser() {
         password: generatePassword(),
     };
 }
-
 
 export {
     getFakeUser,

@@ -1,8 +1,10 @@
 import connection from './connection.js';
 
-async function get() {
-    const result = await connection.query(
-        `SELECT
+async function get({ maximumPrice, color, category, limit }) {
+    
+    let queryText = `
+    SELECT DISTINCT temp.* FROM (
+        SELECT
             itens.name,
             itens.description,
             itens.price,
@@ -11,12 +13,38 @@ async function get() {
             itens.quantity,
             itens.image_url AS image,
             itens.created_at AS "createdAt"
-        FROM itens 
+        FROM itens
         JOIN colors 
             ON itens.color_id = colors.id
         JOIN sizes 
             ON itens.size_id = sizes.id
-        ;`);
+        JOIN itens_and_categories
+            ON itens.id = itens_and_categories.item_id
+        JOIN categories
+            ON categories.id = itens_and_categories.category_id
+        WHERE 1=1`;
+    const queryArray = [];
+
+    if (!!maximumPrice) {
+        queryArray.push(maximumPrice);
+        queryText += ` AND itens.price < $${queryArray.length}`
+    }
+    if (!!color) {
+        queryArray.push(color);
+        queryText += ` AND colors.name = $${queryArray.length}`
+    }
+    if (!!category) {
+        queryArray.push(category);
+        queryText += ` AND categories.name = $${queryArray.length}`
+    }
+
+    queryText += ` ORDER BY RANDOM()) AS temp`;
+    if (!!limit) {
+        queryArray.push(limit);
+        queryText += ` LIMIT $${queryArray.length}`
+    }
+
+    const result = await connection.query(`${queryText};`,queryArray);
     return result.rows;
 }
 
