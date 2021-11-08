@@ -31,6 +31,7 @@ export default function makeDbFactory() {
     }
 
     async function clear() {
+        await connection.query('DELETE FROM sessions');
         await connection.query('DELETE FROM users');
         await connection.query('DELETE FROM itens_and_categories');
         await connection.query('DELETE FROM itens');

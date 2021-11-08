@@ -51,22 +51,9 @@ async function signUp(req, res) {
 }
 
 async function signIn(req, res) {
-    const {
-        email,
-        password,
-    } = req.body;
-
+    const user = res.locals.user
+    
     try {
-        const user = await db.users.get('byEmail', email);
-        if (!user) {
-            return res.sendStatus(401);
-        }
-
-        const isValid = bcrypt.compareSync(password, user.password);
-        if (!isValid) {
-            return res.sendStatus(401);
-        }
-
         const token = await db.users.createSession(user.id);
 
         return res.send({
@@ -82,11 +69,7 @@ async function signIn(req, res) {
 }
 
 async function getUserAuthenticated(req, res) {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-
-    if (!token) {
-        return res.status(401).send('missing token');
-    }
+    const token = res.locals.token
 
     try {
         const user = await db.users.get('session', token);
@@ -107,14 +90,11 @@ async function getUserAuthenticated(req, res) {
 }
 
 async function logOut(req, res) {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const token = res.locals.token
 
-    if (!token) {
-        return res.status(400).send('missing token');
-    }
-    
     try {
         await db.users.removeSessions('byToken', token);
+        
         return res.sendStatus(200);
     } catch (error) {
         console.log(error);

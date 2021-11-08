@@ -11,6 +11,7 @@ async function auth(req, res, next) {
 
     try {
         const user = await db.users.get('byEmail', email);
+        
         if (!user) {
             return res.sendStatus(401);
         }
@@ -19,6 +20,8 @@ async function auth(req, res, next) {
         if (!isValid) {
             return res.sendStatus(401);
         }
+
+        res.locals.user = user;
     }
     catch (error) {
         res.sendStatus(500);

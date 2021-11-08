@@ -22,8 +22,21 @@ const signUpSchema = joi.object ({
     imageUrl: joi.string().allow(''),
     streetNumber: joi.number().positive().required(),
     complement: joi.string().allow(''),
-})
+});
+
+const signInSchema = joi.object ({
+    email:  joi.string().required(),
+    password: joi.string().required(),
+});
+
+const getAuthorizationSchema = joi.object ({
+    authorization: joi.string().min(43).max(43).required(),
+}).unknown();
+
+
 
 export {
     signUpSchema,
+    signInSchema,
+    getAuthorizationSchema,
 }
