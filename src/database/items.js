@@ -3,8 +3,8 @@ import connection from './connection.js';
 async function get({ maximumPrice, color, category, limit }) {
     
     let queryText = `
-    SELECT DISTINCT temp.* FROM (
-        SELECT
+    SELECT temp.* FROM 
+        (SELECT DISTINCT
             itens.name,
             itens.description,
             itens.price,
@@ -37,8 +37,7 @@ async function get({ maximumPrice, color, category, limit }) {
         queryArray.push(category);
         queryText += ` AND categories.name = $${queryArray.length}`
     }
-
-    queryText += ` ORDER BY RANDOM()) AS temp`;
+    queryText += `) AS temp ORDER BY RANDOM()`;
     if (!!limit) {
         queryArray.push(limit);
         queryText += ` LIMIT $${queryArray.length}`
