@@ -149,12 +149,12 @@ describe('USERS ENTITY', () => {
 });
 
 describe('ITEMS ENTITY', () => {
-
+    let insertedId;
     beforeAll(async () => {
         await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
         await db.sizes.add(validBody.sizeName);
         await addFakeCategories(validBody.categories);
-        await db.items.add({
+        insertedId = await db.items.add({
             ...validBody,
             createdAt: new Date(),
             price: 29.9
@@ -218,6 +218,43 @@ describe('ITEMS ENTITY', () => {
             expect(menuObject).toHaveProperty("itens");
             expect(menuObject.itens[0]).toHaveProperty("name");
             } )
+        });
+    });
+
+    describe('route GET /items/:id', () => {
+
+        test('should return 400 when invalid', async () => {
+            const result = await supertest(app)
+                .get(`/items/foo`);
+            
+            expect(result.status).toEqual(400);
+        });
+
+        test('should return 404 when id not exists', async () => {
+            const result = await supertest(app)
+                .get(`/items/${1}`);
+
+
+            expect(result.status).toEqual(404);
+        });
+
+        test('should return 200 when id exists', async () => {
+            const result = await supertest(app)
+                .get(`/items/${insertedId}`);
+
+            const obj = {
+                name: validBody.name,
+                description: expect.anything(),
+                price: expect.anything(),
+                color: expect.anything(),
+                size: expect.anything(),
+                quantity: expect.anything(),
+                image: expect.anything(),
+                createdAt: expect.anything()
+            }
+
+            expect(result.status).toEqual(200);
+            expect(result.body).toEqual(expect.objectContaining(obj));
         });
     });
 });
