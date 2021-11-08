@@ -27,7 +27,7 @@ async function getHomepageItems(req, res) {
     const maximumPrice = randomIntFromInterval(3, 8) * 10;
 
     try {
-        const randomColor = (await db.colors.get({ randomColor: true })).name;
+        const randomColor = (await db.colors.get({ randomColor: true }))?.name;
         const randomCategories = await db.categories.get({ randomCategory: true, limit: 3 });
         const itensForMaximumPrice = await db.items.get({ maximumPrice, limit: 10 });
         const itensForSelectedColor = await db.items.get({ color: randomColor, limit: 10 });

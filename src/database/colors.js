@@ -1,7 +1,7 @@
 import connection from "./connection.js";
 
-async function add({colorName}) {
-    const result = await connection.query(`INSERT INTO colors (name) VALUES ($1) RETURNING *;`,[colorName])
+async function add({colorName, hexCode}) {
+    const result = await connection.query(`INSERT INTO colors (name, hex_code) VALUES ($1, $2) RETURNING *;`,[colorName, hexCode])
     return result.rows[0];
 }
 

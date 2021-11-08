@@ -5,17 +5,17 @@ async function add(categoryName) {
     return result.rows[0];
 }
 
-async function get({arrayOfCategories, randomCategory, limit}) {
+async function get({categories, randomCategory, limit}) {
     let result;
     if (!randomCategory && !limit) {
         let queryText = `SELECT * FROM categories WHERE `
-        arrayOfCategories.forEach((category, index) => {
+        categories.forEach((category, index) => {
             queryText += `name = $${index + 1}`
-            if (index !== arrayOfCategories.length - 1) {
+            if (index !== categories.length - 1) {
                 queryText += " OR "
             }
         })
-        result = await connection.query(`${queryText};`, arrayOfCategories);
+        result = await connection.query(`${queryText};`, categories);
     } else {
         result = await connection.query(`SELECT * FROM categories ORDER BY RANDOM() LIMIT $1;`,[limit]);
     }

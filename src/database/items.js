@@ -1,7 +1,7 @@
 import connection from './connection.js';
 
 async function get({ maximumPrice, color, category, limit }) {
-    
+
     let queryText = `
     SELECT temp.* FROM 
         (SELECT DISTINCT
@@ -74,7 +74,7 @@ async function add(itemData) {
             sizeName,
             quantity,
             imageUrl,
-            new Date(createdAt),
+            createdAt,
         ],
     );
 

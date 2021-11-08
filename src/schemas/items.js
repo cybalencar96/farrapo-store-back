@@ -8,7 +8,7 @@ const itemsSchema = joi.object ({
     sizeName: joi.string().min(1).required(),
     quantity: joi.number().min(0).precision(0).required(),
     imageUrl: joi.string().pattern(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/).required(),
-    categories: joi.array().items(joi.string().min(3)).required(),
+    categories: joi.array().items(joi.string().min(3).required()).required(),
 })
 
 export {

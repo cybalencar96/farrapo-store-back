@@ -22,7 +22,6 @@ export default function makeDbFactory() {
         }
 
         query = query.substr(0, query.length-2) + ';';
-        console.log(query)
 
         return connection.query(query);
     }
@@ -33,6 +32,11 @@ export default function makeDbFactory() {
 
     async function clear() {
         await connection.query('DELETE FROM users');
+        await connection.query('DELETE FROM itens_and_categories');
+        await connection.query('DELETE FROM itens');
+        await connection.query('DELETE FROM colors');
+        await connection.query('DELETE FROM categories');
+        await connection.query('DELETE FROM sizes');
     }
 
 
