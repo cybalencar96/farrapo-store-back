@@ -11,6 +11,11 @@ const itemsSchema = joi.object ({
     categories: joi.array().items(joi.string().min(3).required()).required(),
 })
 
+const getItemSchema = joi.object({
+    id: joi.number().positive(),
+})
+
 export {
     itemsSchema,
+    getItemSchema
 }

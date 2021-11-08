@@ -6,11 +6,16 @@ import {
     getUserAuthenticated,
     logOut,
 } from './controllers/users.js';
-import { getHomepageItems, addItems } from './controllers/items.js';
+import {
+    getHomepageItems,
+    addItems,
+    getItem,
+} from './controllers/items.js';
 import { auth } from './middlewares/auth.js'
 import {
     validateBody,
     validateHeaders,
+    validateParams,
 } from './middlewares/validateRequest.js';
 import {
     signUpSchema,
@@ -18,7 +23,8 @@ import {
     getAuthorizationSchema
 } from './schemas/users.js';
 import {
-    itemsSchema
+    itemsSchema,
+    getItemSchema,
 } from "./schemas/items.js"
 
 const app = express()
@@ -29,18 +35,10 @@ app.get('/status', (req,res) => {
     res.sendStatus(200)
 });
 
-app.post('/signup', signUp);
-app.post('/signup', validateBody(signUpSchema), signUp)
-// app.get('/user', auth, validateBody(getUserSchema), getUser)
-
 app.post('/items', validateBody(itemsSchema), addItems);
 app.get('/items/homepage', getHomepageItems);
+app.get('/items/:id', validateParams(getItemSchema), getItem);
 
-app.get('/teste', async (req, res) => {
-    // const result = await connection.query(`UPDATE users SET gender_id =1;`) 
-    const result = await connection.query(`SELECT * FROM genders ;`)
-});
-    
 app.post('/signup', validateBody(signUpSchema), signUp);
 app.post('/signin', validateBody(signInSchema), auth, signIn);
 app.post('/logout', validateHeaders(getAuthorizationSchema), logOut);

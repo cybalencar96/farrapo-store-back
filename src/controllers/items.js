@@ -13,6 +13,20 @@ async function getItems(req, res) {
     }
 }
 
+async function getItem(req, res) {
+    const id = req.params.id;
+
+    try {
+        const result = await db.items.get({ id });
+        if (!result) return res.sendStatus(404);
+        
+        return res.status(200).send(result);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+}
+
 async function addCategoryRandomItens(homepageItems, randomCategories) {
     for (let i = 0; i < randomCategories.length; i++) {
         const category = randomCategories[i];
@@ -85,4 +99,5 @@ export {
     getItems,
     getHomepageItems,
     addItems,
+    getItem,
 };

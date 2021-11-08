@@ -1,6 +1,6 @@
 import connection from './connection.js';
 
-async function get({ maximumPrice, color, category, limit }) {
+async function get({ id, maximumPrice, color, category, limit }) {
 
     let queryText = `
     SELECT temp.* FROM 
@@ -24,6 +24,14 @@ async function get({ maximumPrice, color, category, limit }) {
             ON categories.id = itens_and_categories.category_id
         WHERE 1=1`;
     const queryArray = [];
+
+    if (!!id) {
+        queryArray.push(id);
+        queryText += ` AND itens.id = $${queryArray.length}) AS temp;`
+
+        const result = await connection.query(queryText,queryArray);
+        return result.rows[0];
+    }
 
     if (!!maximumPrice) {
         queryArray.push(maximumPrice);
