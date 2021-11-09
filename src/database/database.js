@@ -30,14 +30,12 @@ export default function makeDbFactory() {
         connection.end();
     }
 
-    async function clear() {
-        await connection.query('DELETE FROM sessions');
-        await connection.query('DELETE FROM users');
-        await connection.query('DELETE FROM itens_and_categories');
-        await connection.query('DELETE FROM itens');
-        await connection.query('DELETE FROM colors');
-        await connection.query('DELETE FROM categories');
-        await connection.query('DELETE FROM sizes');
+    async function clear(tables) {
+        let queryText = '';
+        tables.forEach(table => {
+            queryText += `DELETE FROM ${table};`
+        })
+        await connection.query(queryText);
     }
 
 
