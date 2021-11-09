@@ -1,6 +1,7 @@
 import connection from './connection.js';
 
 async function get({ maximumPrice, color, category, limit }) {
+    console.log(category)
 
     let queryText = `
     SELECT temp.* FROM 
