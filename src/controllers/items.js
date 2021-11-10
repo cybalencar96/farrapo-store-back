@@ -28,7 +28,7 @@ async function getHomepageItems(req, res) {
         const token = req.headers.authorization?.split("Bearer ")[1];
         let loggedUserData = {maximumPrice: "", mostPopularColor: "", categories: [] }
         if (!!token) {
-            loggedUserData = await db.purchase_history.getHistoryForHomepage(token);
+            loggedUserData = await db.purchaseHistory.getHistoryForHomepage(token);
         }
         const maximumPrice = loggedUserData.maximumPrice ? loggedUserData.maximumPrice : randomIntFromInterval(3, 8) * 10;
         const selectedColor = loggedUserData.mostPopularColor ? loggedUserData.mostPopularColor : (await db.colors.get({ randomColor: true }))?.name;

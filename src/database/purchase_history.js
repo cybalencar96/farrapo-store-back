@@ -1,5 +1,13 @@
 import connection from "./connection.js";
 
+async function add({ userId, itemId, quantity, price, date }) {
+    await connection.query(`
+        INSERT INTO purchase_history (user_id, item_id, quantity, price, date) VALUES ($1,$2,$3,$4,$5);`,
+        [userId, itemId, quantity, price, date]
+    );
+    return;
+}
+
 async function get(token) {
     const firstResult = await connection.query(`
     SELECT
@@ -119,6 +127,7 @@ async function getHistoryForHomepage(token) {
 }
 
 const historyFactory = {
+    add,
     get,
     getHistoryForHomepage,
 }

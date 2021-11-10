@@ -1,7 +1,6 @@
 import connection from './connection.js';
 
 async function get({ maximumPrice, color, category, limit }) {
-    console.log(category)
 
     let queryText = `
     SELECT temp.* FROM 
@@ -89,7 +88,18 @@ async function add(itemData) {
 
     await connection.query(`${itemsAndCategoriesQuery};`, [insertedId.rows[0].id, ...categories]);
 
-    return;
+    return {
+        id: insertedId.rows[0].id,
+        name,
+        description,
+        price,
+        colorName,
+        sizeName,
+        quantity,
+        imageUrl,
+        createdAt,
+        categories,
+    };
 }
 
 const itemsFactory = {

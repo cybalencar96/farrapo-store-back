@@ -5,7 +5,7 @@ import genders from './genders.js';
 import categories from "./categories.js";
 import colors from "./colors.js";
 import sizes from "./sizes.js";
-import purchase_history from "./purchase_history.js";
+import purchaseHistory from "./purchase_history.js";
 
 export default function makeDbFactory() {
 
@@ -47,7 +47,7 @@ export default function makeDbFactory() {
         categories,
         colors,
         sizes,
-        purchase_history,
+        purchaseHistory,
         insertIntoTable,
         endConnection,
         clear,
