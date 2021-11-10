@@ -25,7 +25,7 @@ function getFakeUser() {
         genderName: generateValidGenderName(),
         genderId: randomIntFromInterval(4,6), // for .tests purposes
         birthDate: randomIntFromInterval(1, Date.now()),
-        imageUrl: faker.image.animals(),
+        imageUrl: faker.image.animals() + '.png',
     };
 }
 
