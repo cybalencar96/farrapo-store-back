@@ -1,4 +1,4 @@
-import joi from 'joi';
+import joi, { number, string } from 'joi';
 
 const itemsSchema = joi.object ({
     name: joi.string().min(3).max(255).required(),
@@ -15,7 +15,16 @@ const getItemSchema = joi.object({
     id: joi.number().positive(),
 })
 
+const getItemsSchema = joi.object({
+    id: joi.number().positive(),
+    maximumPrice: joi.number().min(0),
+    color: joi.string(),
+    category: joi.string(),
+    limit: joi.number(),
+});
+
 export {
     itemsSchema,
-    getItemSchema
+    getItemSchema,
+    getItemsSchema
 }

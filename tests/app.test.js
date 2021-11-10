@@ -221,6 +221,24 @@ describe('ITEMS ENTITY', () => {
         });
     });
 
+    describe('route GET /items', () => {
+
+        test('should return 400 when invalid query', async () => {
+            const result = await supertest(app).get('/items/qualquercoisa=1')
+            expect(result.status).toEqual(400);
+        });
+
+        test('should return 200 when got items', async () => {
+            const result = await supertest(app).get('/items')
+            expect(result.status).toEqual(200);
+            expect(result.body.length).toEqual(2);
+        });
+
+        // test('should return 200 when id exists', async () => {
+            
+        // });
+    });
+
     describe('route GET /items/:id', () => {
 
         test('should return 400 when invalid', async () => {

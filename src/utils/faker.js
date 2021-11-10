@@ -3,10 +3,10 @@ import generatePassword from './generatePassword.js';
 import { randomIntFromInterval } from './sharedFunctions.js';
 
 function generateValidGenderName() {
-    const randomInt = randomIntFromInterval(1,3)
-    if (randomInt === 1) return 'not_said';
-    if (randomInt === 2) return 'male';
-    if (randomInt === 3) return 'female';
+    const randomInt = randomIntFromInterval(4,6)
+    if (randomInt === 4) return 'not_said';
+    if (randomInt === 5) return 'male';
+    if (randomInt === 6) return 'female';
 }
 
 function getFakeUuid() {
@@ -23,7 +23,7 @@ function getFakeUser() {
         complement: faker.lorem.words(3),
         phone: String(randomIntFromInterval(100000000, 999999999)),
         genderName: generateValidGenderName(),
-        genderId: randomIntFromInterval(1,3), // for .tests purposes
+        genderId: randomIntFromInterval(4,6), // for .tests purposes
         birthDate: randomIntFromInterval(1, Date.now()),
         imageUrl: faker.image.animals(),
     };

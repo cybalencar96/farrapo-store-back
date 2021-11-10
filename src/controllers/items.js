@@ -1,12 +1,38 @@
 import makeDbFactory from '../database/database.js';
 import { areDuplicatesInArray, randomIntFromInterval} from '../utils/sharedFunctions.js';
+import { removeDuplicatesInArray } from '../utils/sharedFunctions.js';
 
 const db = makeDbFactory();
 
 async function getItems(req, res) {
+
     try {
-        const result = await db.items.get();
-        return res.status(200).send(result);
+
+        const items = await db.items.get({...req.query, limit: 20});
+        const idArray =  items.map(item => item.id);
+        const uniqueItemsIds = removeDuplicatesInArray(idArray);
+        
+        const uniqueItems = items.filter(item => {
+            const indexOfId = uniqueItemsIds.indexOf(item.id) 
+            if (indexOfId > -1) {
+                uniqueItemsIds.splice(indexOfId, 1);
+                return true
+            }
+        });
+
+        const structuredItems = uniqueItems.map(item => {
+            const newItem = {...item}
+            newItem.categories = [];
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].id === item.id) {
+                    newItem.categories.push(items[i].categories)
+                }
+            }
+
+            return newItem;
+        })
+
+        return res.status(200).send(structuredItems);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
@@ -18,6 +44,7 @@ async function getItem(req, res) {
 
     try {
         const result = await db.items.get({ id });
+        console.log(result)
         if (!result) return res.sendStatus(404);
         
         return res.status(200).send(result);

@@ -1,15 +1,24 @@
 import connection from './connection.js';
 
-async function get({ id, maximumPrice, color, category, limit }) {
+async function get(filters = {}) {
+    const {
+        id,
+        maximumPrice,
+        color,
+        category,
+        limit,
+    } = filters;
 
     let queryText = `
     SELECT temp.* FROM 
         (SELECT DISTINCT
+            itens.id,
             itens.name,
             itens.description,
             itens.price,
             colors.name AS color,
             sizes.name AS size,
+            categories.name AS categories,
             itens.quantity,
             itens.image_url AS image,
             itens.created_at AS "createdAt"
@@ -30,7 +39,11 @@ async function get({ id, maximumPrice, color, category, limit }) {
         queryText += ` AND itens.id = $${queryArray.length}) AS temp;`
 
         const result = await connection.query(queryText,queryArray);
-        return result.rows[0];
+        const structuredResult = !!result.rows[0] && {
+            ...result.rows[0],
+            categories: result.rows.map(item => item.categories),
+        }
+        return structuredResult;
     }
 
     if (!!maximumPrice) {
@@ -52,7 +65,8 @@ async function get({ id, maximumPrice, color, category, limit }) {
     }
 
     const result = await connection.query(`${queryText};`,queryArray);
-    return result.rows;
+
+    return result.rows
 }
 
 async function add(itemData) {

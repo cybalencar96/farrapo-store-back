@@ -10,21 +10,24 @@ import {
     getHomepageItems,
     addItems,
     getItem,
+    getItems,
 } from './controllers/items.js';
 import { auth } from './middlewares/auth.js'
 import {
     validateBody,
     validateHeaders,
     validateParams,
+    validateQuery,
 } from './middlewares/validateRequest.js';
 import {
     signUpSchema,
     signInSchema,
-    getAuthorizationSchema
+    getAuthorizationSchema,
 } from './schemas/users.js';
 import {
     itemsSchema,
     getItemSchema,
+    getItemsSchema,
 } from "./schemas/items.js"
 
 const app = express()
@@ -36,6 +39,7 @@ app.get('/status', (req,res) => {
 });
 
 app.post('/items', validateBody(itemsSchema), addItems);
+app.get('/items', validateQuery(getItemsSchema), getItems);
 app.get('/items/homepage', getHomepageItems);
 app.get('/items/:id', validateParams(getItemSchema), getItem);
 
