@@ -1,50 +1,110 @@
 import connection from './connection.js';
 
-async function get({ maximumPrice, color, category, limit }) {
+async function get(filters = {}) {
+    const {
+        id,
+        maximumPrice,
+        color,
+        categories,
+        limit,
+    } = filters;
 
     let queryText = `
-    SELECT temp.* FROM 
-        (SELECT DISTINCT
-            itens.name,
-            itens.description,
-            itens.price,
-            colors.name AS color,
-            sizes.name AS size,
-            itens.quantity,
-            itens.image_url AS image,
-            itens.created_at AS "createdAt"
-        FROM itens
-        JOIN colors 
-            ON itens.color_id = colors.id
-        JOIN sizes 
-            ON itens.size_id = sizes.id
-        JOIN itens_and_categories
-            ON itens.id = itens_and_categories.item_id
-        JOIN categories
-            ON categories.id = itens_and_categories.category_id
+    SELECT
+            id,
+            name,
+            description,
+            price,
+            image,
+            color,
+            size,
+            quantity,
+            "createdAt",
+            array_to_string(array_agg(distinct "category"), ',') AS categories
+        FROM
+            (SELECT 
+                itens.id,
+                itens.name,
+                itens.description,
+                itens.price,
+                itens.image_url AS image,
+                colors.name AS color,
+                sizes.name AS size,
+                itens.quantity,
+                itens.created_at AS "createdAt",
+                categories.name AS category
+            FROM itens
+            JOIN colors 
+                ON itens.color_id = colors.id
+            JOIN sizes 
+                ON itens.size_id = sizes.id
+            JOIN itens_and_categories
+                ON itens.id = itens_and_categories.item_id
+            JOIN categories
+                ON categories.id = itens_and_categories.category_id) AS aux
         WHERE 1=1`;
     const queryArray = [];
 
+    if (!!id) {
+        queryArray.push(id);
+        queryText += `
+                AND aux.id = $${queryArray.length}
+            GROUP BY
+                id,
+                name,
+                description,
+                price,
+                image,
+                color,
+                size,
+                quantity,
+                "createdAt"
+            ORDER BY RANDOM();
+        `
+
+        const result = await connection.query(queryText,queryArray);
+
+        return result.rows[0];
+    }
+
     if (!!maximumPrice) {
         queryArray.push(maximumPrice);
-        queryText += ` AND itens.price < $${queryArray.length}`
+        queryText += ` AND aux.price < $${queryArray.length}`
     }
     if (!!color) {
         queryArray.push(color);
-        queryText += ` AND colors.name = $${queryArray.length}`
+        queryText += ` AND aux.color = $${queryArray.length}`
     }
-    if (!!category) {
-        queryArray.push(category);
-        queryText += ` AND categories.name = $${queryArray.length}`
+    if (!!categories) {
+        categories.forEach(category => {
+            queryArray.push(`%${category}%`);
+            queryText += ` AND aux.categories ILIKE $${queryArray.length}`
+        })
+        
     }
-    queryText += `) AS temp ORDER BY RANDOM()`;
+
+    queryText += `
+    GROUP BY
+            id,
+            name,
+            description,
+            price,
+            image,
+            color,
+            size,
+            quantity,
+            "createdAt"
+    ORDER BY RANDOM()
+    `;
+
     if (!!limit) {
         queryArray.push(limit);
         queryText += ` LIMIT $${queryArray.length}`
     }
 
     const result = await connection.query(`${queryText};`,queryArray);
-    return result.rows;
+
+    return result.rows
 }
 
 async function add(itemData) {

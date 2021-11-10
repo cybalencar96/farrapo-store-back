@@ -6,7 +6,13 @@ function areDuplicatesInArray(array) {
     return array.length !== new Set(array).size
 }
 
+function removeDuplicatesInArray(arr) {
+    return arr.filter((item, idx) => {
+        return arr.indexOf(item) == idx;
+    })
+}
 export {
     randomIntFromInterval,
-    areDuplicatesInArray
+    areDuplicatesInArray,
+    removeDuplicatesInArray,
 }

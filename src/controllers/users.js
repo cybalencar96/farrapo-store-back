@@ -5,16 +5,8 @@ const db = makeDbFactory();
 
 async function signUp(req, res) {
     const {
-        name,
         email,
-        password,
-        zipCode,
-        streetNumber,
-        complement,
-        phone,
         genderName,
-        birthDate,
-        imageUrl,
     } = req.body;
 
     try {
@@ -30,20 +22,24 @@ async function signUp(req, res) {
 
 
         const addedUser = await db.users.add({
-            name,
-            email,
-            password,
-            zipCode,
-            streetNumber,
-            complement,
-            phone,
+            ...req.body,
             genderId: gender.id,
-            birthDate,
-            imageUrl,
         });
 
+        const structuredUser = {
+            id: addedUser.id,
+            name: addedUser.name,
+            email: addedUser.email,
+            zipCode: addedUser.zip_code,
+            streetNumber: addedUser.street_number,
+            complement: addedUser.complement,
+            phone: addedUser.phone,
+            genderName: addedUser.gender_name,
+            birthDate: addedUser.birth_date,
+            imageUrl: addedUser.image_url,
+        }
 
-        return res.status(200).send(addedUser);
+        return res.send(structuredUser);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);

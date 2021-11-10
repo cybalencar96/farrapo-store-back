@@ -5,8 +5,27 @@ const db = makeDbFactory();
 
 async function getItems(req, res) {
     try {
-        const result = await db.items.get();
-        return res.status(200).send(result);
+        const items = await db.items.get({...req.query, limit: 20});
+
+        const structuredItems = items.map(item => ({...item, categories: item.categories.split(',')}))
+        return res.send(structuredItems);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+}
+
+async function getItem(req, res) {
+    const id = req.params.id;
+
+    try {
+        const item = await db.items.get({ id });
+        if (!item) return res.sendStatus(404);
+        
+        return res.status(200).send({
+            ...item,
+            categories: item.categories.split(',')
+        });
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
@@ -99,4 +118,5 @@ export {
     getItems,
     getHomepageItems,
     addItems,
+    getItem,
 };

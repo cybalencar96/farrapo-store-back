@@ -53,7 +53,7 @@ async function add(userInfo) {
                 users.street_number,
                 users.complement,
                 users.phone,
-                genders.name, 
+                genders.name AS gender_name, 
                 users.birth_date, 
                 users.image_url
             FROM users
