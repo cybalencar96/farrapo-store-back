@@ -17,7 +17,7 @@ const fakeUser2 = getFakeUser();
 const invalidFakeUser = getInvalidFakeUser();
 
 afterAll(async () => {
-    await db.clear();
+    await db.clear(["sessions", "users"]);
     db.endConnection();
 });
 
@@ -26,7 +26,7 @@ describe('USERS ENTITY', () => {
     let token;
 
     beforeEach(async () => {
-        await db.clear();
+        await db.clear(["sessions", "users"]);
         user = await db.users.add(fakeUser2);
         token = await db.users.createSession(user.id)
     });
