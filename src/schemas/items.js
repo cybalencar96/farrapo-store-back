@@ -1,4 +1,4 @@
-import joi, { number, string } from 'joi';
+import joi from 'joi';
 
 const itemsSchema = joi.object ({
     name: joi.string().min(3).max(255).required(),

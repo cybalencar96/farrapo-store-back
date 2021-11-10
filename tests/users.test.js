@@ -49,10 +49,11 @@ describe('USERS ENTITY', () => {
         });
 
         test('should return 200 when user inserted', async () => {
+
             const result = await supertest(app)
                 .post('/signup')
                 .send(fakeUser);
-
+            
             expect(result.status).toEqual(200);
         });
     });

@@ -5,10 +5,9 @@ import { removeDuplicatesInArray } from '../utils/sharedFunctions.js';
 const db = makeDbFactory();
 
 async function getItems(req, res) {
-
     try {
-
         const items = await db.items.get({...req.query, limit: 20});
+
         const idArray =  items.map(item => item.id);
         const uniqueItemsIds = removeDuplicatesInArray(idArray);
         
@@ -32,7 +31,7 @@ async function getItems(req, res) {
             return newItem;
         })
 
-        return res.status(200).send(structuredItems);
+        return res.send(structuredItems);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
@@ -44,7 +43,6 @@ async function getItem(req, res) {
 
     try {
         const result = await db.items.get({ id });
-        console.log(result)
         if (!result) return res.sendStatus(404);
         
         return res.status(200).send(result);
