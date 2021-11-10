@@ -33,7 +33,7 @@ describe('ITEMS ENTITY', () => {
             ...validBody,
             categories: validBody.categories.slice(0,3),
             createdAt: new Date(),
-        }) // for better predict which categories will be more popular from user history - Test Number 7;
+        }) // for better predicting which categories will be more popular from user history - Test Number 7;
         const user = await db.users.add(fakeUser);
         fakeToken = await db.users.createSession(user.id);
         await db.purchaseHistory.add({
