@@ -1,6 +1,10 @@
 import connection from "./connection.js"
+import items from "./items.js"
 import users from "./users.js"
 import genders from './genders.js';
+import categories from "./categories.js";
+import colors from "./colors.js";
+import sizes from "./sizes.js";
 
 export default function makeDbFactory() {
 
@@ -18,7 +22,6 @@ export default function makeDbFactory() {
         }
 
         query = query.substr(0, query.length-2) + ';';
-        console.log(query)
 
         return connection.query(query);
     }
@@ -27,15 +30,22 @@ export default function makeDbFactory() {
         connection.end();
     }
 
-    async function clear() {
-        await connection.query('DELETE FROM sessions');
-        await connection.query('DELETE FROM users');
+    async function clear(tables) {
+        let queryText = '';
+        tables.forEach(table => {
+            queryText += `DELETE FROM ${table};`
+        })
+        await connection.query(queryText);
     }
 
 
     return {
+        items,
         users,
         genders,
+        categories,
+        colors,
+        sizes,
         insertIntoTable,
         endConnection,
         clear,

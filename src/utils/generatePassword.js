@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
+
 export default function generatePassword(numLc, numUc, numDigits, numSpecial) {
     numLc = numLc || 4;
     numUc = numUc || 4;
