@@ -99,11 +99,11 @@ describe('ITEMS ENTITY', () => {
     });
 
 
-    describe('route GET /items/homepage', () => {
+    describe('route GET /homepage/items', () => {
 
         test('should return 200 and an array of 5 objects', async () => {
             const result = await supertest(app)
-                .get('/items/homepage');
+                .get('/homepage/items');
 
             expect(result.status).toEqual(200);
             expect(result.body).toHaveLength(5);

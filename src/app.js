@@ -40,7 +40,7 @@ app.get('/status', (req,res) => {
 
 app.post('/items', validateBody(itemsSchema), addItems);
 app.get('/items', validateQuery(getItemsSchema), getItems);
-app.get('/items/homepage', getHomepageItems);
+app.get('/homepage/items', getHomepageItems);
 app.get('/items/:id', validateParams(getItemSchema), getItem);
 
 app.post('/signup', validateBody(signUpSchema), signUp);
