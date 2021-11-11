@@ -68,7 +68,7 @@ describe('ITEMS ENTITY', () => {
 
     describe('route POST /items', () => {
             
-        test('Number 1: should return 400 if body has missing atributes', async () => {
+        test('should return 400 if body has missing atributes', async () => {
             const invalidBody = { ...validBody, categories: [] };
             const result = await supertest(app)
                 .post('/items').send(invalidBody);
@@ -76,7 +76,7 @@ describe('ITEMS ENTITY', () => {
             expect(result.status).toEqual(400);
         });
 
-        test('Number 2: should return 404 if body.colorName is not in Database', async () => {
+        test('should return 404 if body.colorName is not in Database', async () => {
             const bodyWithInvalidColor = { ...validBody, colorName: invalidColor };
             const result = await supertest(app)
                 .post('/items').send(bodyWithInvalidColor);
@@ -84,7 +84,7 @@ describe('ITEMS ENTITY', () => {
             expect(result.status).toEqual(404);
         });
 
-        test('Number 3: should return 404 if body.sizeName is not in Database', async () => {
+        test('should return 404 if body.sizeName is not in Database', async () => {
             const bodyWithInvalidSize = { ...validBody, sizeName: invalidSize };
             const result = await supertest(app)
                 .post('/items').send(bodyWithInvalidSize);
@@ -92,7 +92,7 @@ describe('ITEMS ENTITY', () => {
             expect(result.status).toEqual(404);
         });
 
-        test('Number 4: should return 404 if body.categories includes any category that is not in Database', async () => {
+        test('should return 404 if body.categories includes any category that is not in Database', async () => {
             const bodyWithInvalidCategory = { ...validBody, categories: [...validBody.categories, invalidCategory] };
             const result = await supertest(app)
                 .post('/items').send(bodyWithInvalidCategory);
@@ -100,7 +100,7 @@ describe('ITEMS ENTITY', () => {
             expect(result.status).toEqual(404);
         });
 
-        test('Number 5: should return 201 if body is valid', async () => {
+        test('should return 201 if body is valid', async () => {
             const result = await supertest(app)
                 .post('/items').send(validBody);
 
@@ -111,7 +111,7 @@ describe('ITEMS ENTITY', () => {
 
     describe('route GET /homepage/items', () => {
 
-        test('Number 6: If no token is sent, should return 200 and an array of 5 random objects', async () => {
+        test('If no token is sent, should return 200 and an array of 5 random objects', async () => {
             const result = await supertest(app)
                 .get('/homepage/items');
 
@@ -128,7 +128,7 @@ describe('ITEMS ENTITY', () => {
             })
         });
 
-        test(`Number 7: If token is sent, should return 200 and an array of 5 objects, but titles must match data from user's purchase History`, async () => {
+        test(`If token is sent, should return 200 and an array of 5 objects, but titles must match data from user's purchase History`, async () => {
             
             const expectedResult = [
                 { title: `Até R$${fakePaidPrice},00`, forwardMessage: "Que pechincha!", itens: expect.any(Array) },
