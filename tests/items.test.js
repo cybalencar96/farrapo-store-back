@@ -5,6 +5,7 @@ import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
 import { getValidInsertionItemsBody, getFakeHexCode, getInvalidColor, getInvalidSize, getInvalidCategory, getFakeUser, getFakeUuid} from '../src/utils/faker.js';
 import { randomIntFromInterval } from '../src/utils/sharedFunctions.js';
+import { valid } from 'joi';
 
 const db = makeDbFactory();
 const validBody = getValidInsertionItemsBody();
@@ -21,19 +22,25 @@ describe('ITEMS ENTITY', () => {
     let fakeToken;
     let fakeCreatedItem;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
+        await db.clear([
+            'purchase_history',
+            'itens_and_categories',
+            'itens',
+            'colors',
+            'categories',
+            'sizes',
+            'sessions',
+            'users',
+        ]);
         await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
         await db.sizes.add(validBody.sizeName);
         await db.categories.add(validBody.categories);
-        await db.items.add({
-            ...validBody,
-            createdAt: new Date(),
-        })
         fakeCreatedItem = await db.items.add({
             ...validBody,
-            categories: validBody.categories.slice(0,3),
+            categories: validBody.categories.slice(0,3), // for better predicting which categories will be more popular from user history
             createdAt: new Date(),
-        }) // for better predicting which categories will be more popular from user history - Test Number 7;
+        }) 
         const user = await db.users.add(fakeUser);
         fakeToken = await db.users.createSession(user.id);
         await db.purchaseHistory.add({
@@ -43,14 +50,7 @@ describe('ITEMS ENTITY', () => {
             price: fakePaidPrice,
             date: new Date(),
         })
-    })
-
-    afterEach(async () => {
-        await db.clear([
-            'itens_and_categories',
-            'itens',
-        ]);
-    })
+    });
 
     afterAll(async () => {
         await db.clear([
@@ -139,7 +139,7 @@ describe('ITEMS ENTITY', () => {
             ];
 
             const result = await supertest(app)
-                .get('/items/homepage').set('Authorization', `Bearer ${fakeToken}`);
+                .get('/homepage/items').set('Authorization', `Bearer ${fakeToken}`);
 
             expect(result.status).toEqual(200);
             expect(result.body).toEqual(expect.arrayContaining(expectedResult));
@@ -165,7 +165,7 @@ describe('ITEMS ENTITY', () => {
 
         test('should return 200 when id exists', async () => {
             const result = await supertest(app)
-                .get(`/items/${insertedId}`);
+                .get(`/items/${fakeCreatedItem.id}`);
 
             const obj = {
                 name: validBody.name,
@@ -195,7 +195,7 @@ describe('ITEMS ENTITY', () => {
                     id: expect.anything(),
                     name: validBody.name,
                     description: validBody.description,
-                    price: "29.90",
+                    price: String(validBody.price),
                     color: validBody.colorName,
                     size: validBody.sizeName,
                     categories: expect.anything(),
