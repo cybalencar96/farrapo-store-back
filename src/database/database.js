@@ -5,6 +5,7 @@ import genders from './genders.js';
 import categories from "./categories.js";
 import colors from "./colors.js";
 import sizes from "./sizes.js";
+import cart from './cart.js';
 
 export default function makeDbFactory() {
 
@@ -46,6 +47,7 @@ export default function makeDbFactory() {
         categories,
         colors,
         sizes,
+        cart,
         insertIntoTable,
         endConnection,
         clear,
