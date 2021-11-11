@@ -3,7 +3,8 @@ import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
-import { getValidInsertionItemsBody, getFakeHexCode, getInvalidColor, getInvalidSize, getInvalidCategory} from '../src/utils/faker.js';
+import { getValidInsertionItemsBody, getFakeHexCode, getInvalidColor, getInvalidSize, getInvalidCategory, getFakeUser, getFakeUuid} from '../src/utils/faker.js';
+import { randomIntFromInterval } from '../src/utils/sharedFunctions.js';
 import { valid } from 'joi';
 
 const db = makeDbFactory();
@@ -12,46 +13,55 @@ const fakeHexCode = getFakeHexCode();
 const invalidColor = getInvalidColor(validBody);
 const invalidSize = getInvalidSize(validBody);
 const invalidCategory = getInvalidCategory(validBody);
+const fakeUser = getFakeUser();
+const fakePaidPrice = randomIntFromInterval(3, 8) * 10;
 
-async function addFakeCategories(fakeCategories) {
-    for (let i = 0; i < fakeCategories.length; i++) {
-        const category = fakeCategories[i];
-        await db.categories.add(category);
-    }
-    return;
-}
 
 describe('ITEMS ENTITY', () => {
-    let insertedId;
-    
-    beforeAll(async () => {
-        await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
-        await db.sizes.add(validBody.sizeName);
-        await addFakeCategories(validBody.categories);
-    });
+
+    let fakeToken;
+    let fakeCreatedItem;
 
     beforeEach(async () => {
-        insertedId = await db.items.add({
-            ...validBody,
-            createdAt: new Date(),
-            price: 29.9
-        })
-    })
-
-    afterEach(async () => {
         await db.clear([
-            'itens_and_categories',
-            'itens',
-        ]);
-    })
-
-    afterAll(async () => {
-        await db.clear([
+            'purchase_history',
             'itens_and_categories',
             'itens',
             'colors',
             'categories',
-            'sizes'
+            'sizes',
+            'sessions',
+            'users',
+        ]);
+        await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
+        await db.sizes.add(validBody.sizeName);
+        await db.categories.add(validBody.categories);
+        fakeCreatedItem = await db.items.add({
+            ...validBody,
+            categories: validBody.categories.slice(0,3), // for better predicting which categories will be more popular from user history
+            createdAt: new Date(),
+        }) 
+        const user = await db.users.add(fakeUser);
+        fakeToken = await db.users.createSession(user.id);
+        await db.purchaseHistory.add({
+            userId: user.id,
+            itemId: fakeCreatedItem.id,
+            quantity: randomIntFromInterval(2,100),
+            price: fakePaidPrice,
+            date: new Date(),
+        })
+    });
+
+    afterAll(async () => {
+        await db.clear([
+            'purchase_history',
+            'itens_and_categories',
+            'itens',
+            'colors',
+            'categories',
+            'sizes',
+            'sessions',
+            'users',
         ]);
         db.endConnection();
     });
@@ -101,7 +111,7 @@ describe('ITEMS ENTITY', () => {
 
     describe('route GET /homepage/items', () => {
 
-        test('should return 200 and an array of 5 objects', async () => {
+        test('If no token is sent, should return 200 and an array of 5 random objects', async () => {
             const result = await supertest(app)
                 .get('/homepage/items');
 
@@ -116,6 +126,23 @@ describe('ITEMS ENTITY', () => {
                     })
                 )
             })
+        });
+
+        test(`If token is sent, should return 200 and an array of 5 objects, but titles must match data from user's purchase History`, async () => {
+            
+            const expectedResult = [
+                { title: `Até R$${fakePaidPrice},00`, forwardMessage: "Que pechincha!", itens: expect.any(Array) },
+                { title: `Que tal um pouco de ${fakeCreatedItem.colorName.toLowerCase()}`, forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[0], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[1], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[2], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+            ];
+
+            const result = await supertest(app)
+                .get('/homepage/items').set('Authorization', `Bearer ${fakeToken}`);
+
+            expect(result.status).toEqual(200);
+            expect(result.body).toEqual(expect.arrayContaining(expectedResult));
         });
     });
 
@@ -138,7 +165,7 @@ describe('ITEMS ENTITY', () => {
 
         test('should return 200 when id exists', async () => {
             const result = await supertest(app)
-                .get(`/items/${insertedId}`);
+                .get(`/items/${fakeCreatedItem.id}`);
 
             const obj = {
                 name: validBody.name,
@@ -168,7 +195,7 @@ describe('ITEMS ENTITY', () => {
                     id: expect.anything(),
                     name: validBody.name,
                     description: validBody.description,
-                    price: "29.90",
+                    price: String(validBody.price),
                     color: validBody.colorName,
                     size: validBody.sizeName,
                     categories: expect.anything(),
