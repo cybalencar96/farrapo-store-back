@@ -1,8 +1,15 @@
 import connection from "./connection.js";
 
-async function add(categoryName) {
-    const result = await connection.query(`INSERT INTO categories (name) VALUES ($1) RETURNING *;`,[categoryName])
-    return result.rows[0];
+async function add(categories) {
+    let queryText = "INSERT INTO categories (name) VALUES ";
+    categories.forEach((category, index) => {
+        queryText += `($${index + 1})`;
+        if (index !== categories.length - 1) {
+            queryText += ", ";
+        }
+    })
+    const result = await connection.query(`${queryText};`, categories);
+    return;
 }
 
 async function get({categories, randomCategory, limit}) {

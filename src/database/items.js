@@ -147,8 +147,19 @@ async function add(itemData) {
     })
 
     await connection.query(`${itemsAndCategoriesQuery};`, [insertedId.rows[0].id, ...categories]);
- 
-    return insertedId.rows[0].id;
+
+    return {
+        id: insertedId.rows[0].id,
+        name,
+        description,
+        price,
+        colorName,
+        sizeName,
+        quantity,
+        imageUrl,
+        createdAt,
+        categories,
+    };
 }
 
 const itemsFactory = {

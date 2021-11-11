@@ -56,6 +56,7 @@ async function signIn(req, res) {
             id: user.id,
             name: user.name,
             email: user.email,
+            image: user.image_url,
             token,
         });
     } catch (error) {

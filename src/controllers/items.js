@@ -32,31 +32,45 @@ async function getItem(req, res) {
     }
 }
 
-async function addCategoryRandomItens(homepageItems, randomCategories) {
-    for (let i = 0; i < randomCategories.length; i++) {
-        const category = randomCategories[i];
-        const itensForSelectedCategory = await db.items.get({ category: category.name, limit: 10 });
-        homepageItems.push({ title: category.name, forwardMessage: "Quero ver mais!", itens: itensForSelectedCategory });
+async function addCategoryRandomItens(homepageItems, categories) {
+    for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        const itensForSelectedCategory = await db.items.get({ category, limit: 10 });
+        homepageItems.push({ title: category, forwardMessage: "Quero ver mais!", itens: itensForSelectedCategory });
     }
     return;
 }
 
 async function getHomepageItems(req, res) {
-    
-    const maximumPrice = randomIntFromInterval(3, 8) * 10;
 
     try {
-        const randomColor = (await db.colors.get({ randomColor: true }))?.name;
-        const randomCategories = await db.categories.get({ randomCategory: true, limit: 3 });
+        const token = req.headers.authorization?.split("Bearer ")[1];
+        let loggedUserData = {maximumPrice: "", mostPopularColor: "", categories: [] }
+        if (!!token) {
+            loggedUserData = await db.purchaseHistory.getHistoryForHomepage(token);
+        }
+        const maximumPrice = loggedUserData.maximumPrice ? loggedUserData.maximumPrice : randomIntFromInterval(3, 8) * 10;
+        const selectedColor = loggedUserData.mostPopularColor ? loggedUserData.mostPopularColor : (await db.colors.get({ randomColor: true }))?.name;
+        const selectedCategories = [...loggedUserData.categories];
+        if (selectedCategories.length < 3) {
+            const randomCategories = (await db.categories.get({ randomCategory: true, limit: 3 })).map( ({name}) => name);
+            for (let i = 0; i < randomCategories.length; i++) {
+                const categoryToBeAdded = randomCategories[i];
+                if (!selectedCategories.includes(categoryToBeAdded)) {
+                    selectedCategories.push(categoryToBeAdded);
+                }
+                if (selectedCategories.length === 3) break;
+            }
+        }
         const itensForMaximumPrice = await db.items.get({ maximumPrice, limit: 10 });
-        const itensForSelectedColor = await db.items.get({ color: randomColor, limit: 10 });
+        const itensForSelectedColor = await db.items.get({ color: selectedColor, limit: 10 });
 
         const homepageItems = [
             { title: `Até R$${maximumPrice},00`, forwardMessage: "Que pechincha!", itens: itensForMaximumPrice },
-            { title: `Que tal um pouco de ${randomColor}`, forwardMessage: "Quero ver mais!", itens: itensForSelectedColor },
+            { title: `Que tal um pouco de ${selectedColor.toLowerCase()}`, forwardMessage: "Quero ver mais!", itens: itensForSelectedColor },
         ]
 
-        await addCategoryRandomItens(homepageItems, randomCategories);
+        await addCategoryRandomItens(homepageItems, selectedCategories);
         
         return res.send(homepageItems);
     } catch (error) {
