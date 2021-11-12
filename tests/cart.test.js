@@ -24,7 +24,7 @@ describe('ENTITY CART', () => {
     let fakeCreatedItem;
     let fakeCreatedItem2;
     let visitor;
-    let cartItemId;
+    let cartItem;
 
     beforeEach(async () => {
         
@@ -47,7 +47,7 @@ describe('ENTITY CART', () => {
             createdAt: new Date(),
         });
 
-        cartItemId = await db.cart.addItem({
+        cartItem = await db.cart.addItem({
             itemId: fakeCreatedItem.id,
             visitorToken: validVisitorToken,
             quantity: 1,
@@ -155,7 +155,7 @@ describe('ENTITY CART', () => {
         test('should return 403 when quantity surpasses limit', async () => {
             const body = {
                 quantity: fakeCreatedItem.quantity + 1, // max quantity + 1
-                cartId: cartItemId
+                cartId: cartItem.id
             }
 
             const result = await supertest(app)
@@ -168,7 +168,7 @@ describe('ENTITY CART', () => {
         test('should return 200 when quantity updated', async () => {
             const body = {
                 quantity: fakeCreatedItem.quantity - 1,
-                cartId: cartItemId
+                cartId: cartItem.id
             }
 
             const result = await supertest(app)
@@ -238,12 +238,27 @@ describe('ENTITY CART', () => {
                 quantity: 1,
             }
 
+            const expectedObj = {
+                itemName: fakeCreatedItem2.name,
+                cartQty: 1,
+                maxQty: fakeCreatedItem2.quantity,
+                price: String(fakeCreatedItem2.price.toFixed(2)),
+                imageUrl: fakeCreatedItem2.imageUrl,
+                description: fakeCreatedItem2.description,
+                size: fakeCreatedItem2.sizeName,
+                id: expect.anything(),
+                visitorId: visitor.id,
+                itemId: fakeCreatedItem2.id,
+                userId: null,
+                userName: null
+            }
+
             const result = await supertest(app)
                 .post('/cart')
                 .send(body);
 
             expect(result.status).toEqual(200);
-            expect(result.body.cartItemId).toEqual(expect.any(Number))
+            expect(result.body).toEqual(expect.objectContaining(expectedObj))
         });
     });
 });

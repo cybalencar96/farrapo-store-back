@@ -53,7 +53,28 @@ async function addItem(cartInfos = {}) {
         VALUES ($1, $2, $3, $4) RETURNING id
     `,[itemId, quantity, userId, visitor?.id]);
 
-    return result.rows[0].id;
+    const addedItem = await connection.query(`
+        SELECT 
+            itens.name AS "itemName",
+            cart.quantity as "cartQty",
+            itens.quantity AS "maxQty",
+            itens.price,
+            itens.image_url AS "imageUrl",
+            itens.description,
+            sizes.name AS size,
+            cart.id,
+            cart.visitor_id as "visitorId",
+            itens.id AS "itemId",
+            users.id AS "userId",
+            users.name AS "userName"
+        FROM cart 
+        LEFT JOIN users ON users.id = cart.user_id
+        LEFT JOIN itens ON itens.id = cart.item_id
+        LEFT JOIN sizes ON sizes.id = itens.size_id
+        WHERE cart.id = $1
+    `,[result.rows[0].id])
+
+    return addedItem.rows[0];
 }
 
 async function getCartFromUser({userId, visitorId}) {

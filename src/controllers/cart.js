@@ -40,9 +40,8 @@ async function addToCart(req, res) {
             return res.status(403).send('max dynamic quantity reached');
         }
 
-        const cartItemId = await db.cart.addItem(req.body)
-
-        return res.send({ cartItemId });
+        const addedItem = await db.cart.addItem(req.body)
+        return res.send(addedItem);
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
