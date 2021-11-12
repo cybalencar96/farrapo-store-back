@@ -44,8 +44,8 @@ app.post('/items', validateBody(itemsSchema), addItems);
 app.get('/items', validateQuery(getItemsSchema), getItems);
 app.get('/homepage/items', getHomepageItems);
 app.get('/items/:id', validateParams(getItemSchema), getItem);
-app.post('/items/:id/cart', validateBody(postCartSchema) ,addToCart);
 
+app.post('/cart', validateBody(postCartSchema) ,addToCart);
 app.put('/cart', validateBody(putCartQtySchema), updateQty);
 app.get('/cart', validateQuery(getClientCartSchema), getUserCart);
 

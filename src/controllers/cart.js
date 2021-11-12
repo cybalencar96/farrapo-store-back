@@ -78,7 +78,18 @@ async function getUserCart(req, res) {
             return res.status(400).send('send one id');
         }
 
-        const userCart = await db.cart.getCartFromUser({userId, visitorToken});
+        let visitor = {};
+        if (visitorToken) {
+            visitor = await db.visitors.get(visitorToken);
+            if (!visitor) return res.status(400).send('token invalid');
+        }
+
+        if (userId) {
+            const user = await db.users.get('byId', userId);
+            if (!user) return res.status(400).send('user invalid');
+        }
+
+        const userCart = await db.cart.getCartFromUser({userId, visitorId: visitor.id});
         return res.send(userCart)
     } catch (error) {
         console.log(error);

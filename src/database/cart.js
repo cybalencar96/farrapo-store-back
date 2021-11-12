@@ -27,7 +27,6 @@ async function get(cartInfos = {}) {
         query += 'AND item_id = $1 AND visitor_id = $2';
 
         const cartItem = await connection.query(query, [itemId, visitor?.id]);
-        console.log(cartItem)
 
         return cartItem.rows[0];
     }
@@ -57,12 +56,8 @@ async function addItem(cartInfos = {}) {
     return result.rows[0].id;
 }
 
-async function getCartFromUser({userId, visitorToken}) {
-    let visitor = {};
-    if (visitorToken) {
-        visitor = await visitorsFactory.get(visitorToken)
-    }
-    const clientId = userId ? userId : visitor.id;
+async function getCartFromUser({userId, visitorId}) {
+    const clientId = userId ? userId : visitorId;
     const clientColumn = userId ? 'user_id' : 'visitor_id';
 
     let query = `

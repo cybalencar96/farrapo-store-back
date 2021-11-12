@@ -5,7 +5,6 @@ import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
 import { getValidInsertionItemsBody, getFakeHexCode, getInvalidColor, getInvalidSize, getInvalidCategory, getFakeUser, getFakeUuid} from '../src/utils/faker.js';
 import { randomIntFromInterval } from '../src/utils/sharedFunctions.js';
-import { valid } from 'joi';
 
 const db = makeDbFactory();
 const validBody = getValidInsertionItemsBody();
@@ -195,7 +194,7 @@ describe('ITEMS ENTITY', () => {
                     id: expect.anything(),
                     name: validBody.name,
                     description: validBody.description,
-                    price: String(validBody.price),
+                    price: String(validBody.price.toFixed(2)),
                     color: validBody.colorName,
                     size: validBody.sizeName,
                     categories: expect.anything(),

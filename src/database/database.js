@@ -7,6 +7,7 @@ import colors from "./colors.js";
 import sizes from "./sizes.js";
 import cart from './cart.js';
 import purchaseHistory from "./purchase_history.js";
+import visitors from "./visitors.js";
 
 export default function makeDbFactory() {
 
@@ -50,6 +51,7 @@ export default function makeDbFactory() {
         sizes,
         cart,
         purchaseHistory,
+        visitors,
         insertIntoTable,
         endConnection,
         clear,
