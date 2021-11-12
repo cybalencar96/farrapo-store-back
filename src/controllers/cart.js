@@ -6,12 +6,22 @@ async function addToCart(req, res) {
     const {
         itemId,
         userId,
-        visitorId,
+        visitorToken,
     } = req.body
 
     try {
-        if ((!userId && !visitorId) || (userId && visitorId)) {
+        if ((!userId && !visitorToken) || (userId && visitorToken)) {
             return res.status(400).send('send one id');
+        }
+
+        if (userId) {
+            const itemInCart = await db.cart.get({ itemId, userId });
+            if (itemInCart) return res.status(409).send('item already in cart');
+        }
+
+        if (visitorToken) {
+            const itemInCart = await db.cart.get({ itemId, visitorToken });
+            if (itemInCart) return res.status(409).send('item already in cart');
         }
 
         const item = await db.items.get({ id: itemId })
@@ -20,7 +30,8 @@ async function addToCart(req, res) {
         }
 
         const user = await db.users.get('byId', userId)
-        if (!user) {
+        if (userId && !user) {
+            console.log(userId, !user)
             return res.status(404).send('user not found');
         }
 
@@ -60,14 +71,14 @@ async function updateQty(req, res) {
 }
 
 async function getUserCart(req, res) {
-    const { userId, visitorId } = req.query;
+    const { userId, visitorToken } = req.query;
 
     try {
-        if ((!userId && !visitorId) || (userId && visitorId)) {
+        if ((!userId && !visitorToken) || (userId && visitorToken)) {
             return res.status(400).send('send one id');
         }
 
-        const userCart = await db.cart.getCartFromUser({userId, visitorId});
+        const userCart = await db.cart.getCartFromUser({userId, visitorToken});
         return res.send(userCart)
     } catch (error) {
         console.log(error);
