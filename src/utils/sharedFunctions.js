@@ -18,10 +18,26 @@ function translateDiacriticsQuery(variable) {
     return `translate(${variable},'${specialCharacters}','${charactersToReplace}')`;
 }
 
+function lowerCaseWithoutDiacritics(string) {
+    const specialCharacters = "ÁÉÍÓÚáéíóúâêîôûàèìòùÇç";
+    const charactersToReplace = "AEIOUaeiouaeiouaeiouCc";
+    const arrayToBeJoined = [];
+    string.split("").forEach(character => {
+        if (specialCharacters.includes(character)) {
+            const characterIndex = specialCharacters.indexOf(character);
+            arrayToBeJoined.push(charactersToReplace[characterIndex]);
+        } else {
+            arrayToBeJoined.push(character)
+        }
+    })
+    return arrayToBeJoined.join("").toLowerCase();
+}
+
 
 export {
     randomIntFromInterval,
     areDuplicatesInArray,
     removeDuplicatesInArray,
     translateDiacriticsQuery,
+    lowerCaseWithoutDiacritics
 }

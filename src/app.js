@@ -30,6 +30,7 @@ import {
     getItemsSchema,
 } from "./schemas/items.js"
 import { getSearchItems } from './controllers/search.js';
+import { getFilters } from './controllers/filters.js';
 
 const app = express()
 app.use(express.json());
@@ -45,6 +46,8 @@ app.get('/homepage/items', getHomepageItems);
 app.get('/items/:id', validateParams(getItemSchema), getItem);
 
 app.get('/search/:searchedName&:categories&:colors&:sizes&:price&:orderBy', getSearchItems);
+app.get('/filters', getFilters);
+
 
 app.post('/signup', validateBody(signUpSchema), signUp);
 app.post('/signin', validateBody(signInSchema), auth, signIn);

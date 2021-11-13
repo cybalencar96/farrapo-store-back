@@ -1,26 +1,12 @@
 import makeDbFactory from '../database/database.js';
-import { areRawSearchParamsValid } from '../schemas/search.js';
+import { areRawSearchParamsValid} from '../schemas/search.js';
+import { lowerCaseWithoutDiacritics } from '../utils/sharedFunctions.js';
 
 const db = makeDbFactory();
 
 function queryToString(query) {
     let string = query.replace("---", "").replace("-", " ")
     return string;
-}
-
-function lowerCaseWithoutDiacritics(string) {
-    const specialCharacters = "ÁÉÍÓÚáéíóúâêîôûàèìòùÇç";
-    const charactersToReplace = "AEIOUaeiouaeiouaeiouCc";
-    const arrayToBeJoined = [];
-    string.split("").forEach(character => {
-        if (specialCharacters.includes(character)) {
-            const characterIndex = specialCharacters.indexOf(character);
-            arrayToBeJoined.push(charactersToReplace[characterIndex]);
-        } else {
-            arrayToBeJoined.push(character)
-        }
-    })
-    return arrayToBeJoined.join("").toLowerCase();
 }
 
 function getFiltersObjectFromQuery(params) {
