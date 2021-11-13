@@ -2,7 +2,7 @@ import makeDbFactory from "../database/database.js";
 
 const db = makeDbFactory();
 
-async function clearDb(req, res) {
+async function setupTestDb(req, res) {
     if (req.query.cypress !== 'tests') return res.sendStatus(400);
     if (process.env.NODE_ENV !== 'test') return res.sendStatus(500);
     
@@ -20,9 +20,14 @@ async function clearDb(req, res) {
         'genders',
     ]);
 
+    await db.colors.add({ colorName: 'Branco', hexCode: 'FFFFFF' });
+    await db.sizes.add('G');
+    await db.categories.add(['praia', 'funeral']);
+    await db.genders.add('not_said');
+
     res.sendStatus(200);
 }
 
 export {
-    clearDb,
+    setupTestDb,
 }

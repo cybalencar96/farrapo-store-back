@@ -32,7 +32,7 @@ import {
 import { addToCart, updateQty, getUserCart, deleteClientCart } from './controllers/cart.js';
 import { postCartSchema, putCartQtySchema, getClientCartSchema, deleteClientCartSchema } from './schemas/cart.js';
 import { getPurchaseHistory } from './controllers/purchaseHistory.js';
-import { clearDb } from './controllers/tests.js';
+import { setupTestDb } from './controllers/tests.js';
 
 const app = express()
 app.use(express.json());
@@ -61,6 +61,6 @@ app.get('/user', validateHeaders(getAuthorizationSchema), getUserAuthenticated);
 
 
 // E2E test routes
-app.get('/cleardb', clearDb);
+app.get('/setup-test-db', setupTestDb);
 
 export default app;
