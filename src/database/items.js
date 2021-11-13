@@ -1,11 +1,15 @@
 import connection from './connection.js';
+import { translateDiacriticsQuery } from '../utils/sharedFunctions.js'
 
 async function get(filters = {}) {
     const {
         id,
         maximumPrice,
-        color,
+        searchedName,
+        orderBy,
+        colors,
         categories,
+        sizes,
         limit,
     } = filters;
 
@@ -71,17 +75,52 @@ async function get(filters = {}) {
         queryArray.push(maximumPrice);
         queryText += ` AND aux.price < $${queryArray.length}`
     }
-    if (!!color) {
-        queryArray.push(color);
-        queryText += ` AND aux.color = $${queryArray.length}`
+
+    if (!!searchedName) {
+        queryArray.push(`%${searchedName}%`);
+        queryText += ` AND aux.name iLIKE $${queryArray.length}`
     }
-    if (!!categories) {
-        categories.forEach(category => {
-            queryArray.push(`%${category}%`);
-            queryText += ` AND aux.categories ILIKE $${queryArray.length}`
+
+    if (!!colors && !!colors.length) {
+        queryText += ` AND (`
+        colors.forEach((color, index) => {
+            queryArray.push(color);
+            queryText += ` ${translateDiacriticsQuery("aux.color")} iLIKE ${translateDiacriticsQuery(`$${queryArray.length}`)}`
+            if (index !== colors.length - 1) {
+                queryText += " OR";
+            }
         })
-        
+        queryText += " )";
     }
+
+    if (!!categories && !!categories.length) {
+        queryText += ` AND (`
+        categories.forEach((category, index) => {
+            queryArray.push(`%${category}%`);
+            queryText += ` ${translateDiacriticsQuery("aux.category")} iLIKE ${translateDiacriticsQuery(`$${queryArray.length}`)}`
+            if (index !== categories.length - 1) {
+                queryText += " OR";
+            }
+        })
+        queryText += " )";
+    }
+
+    if (!!sizes && !!sizes.length) {
+        queryText += ` AND (`
+        sizes.forEach((size, index) => {
+            queryArray.push(`%${size}%`);
+            queryText += ` ${translateDiacriticsQuery("aux.size")} iLIKE ${translateDiacriticsQuery(`$${queryArray.length}`)}`
+            if (index !== sizes.length - 1) {
+                queryText += " OR";
+            }
+        })
+        queryText += " )";
+    }
+
+    const possibleOrderByOptions = ["menor preco", "maior preco", "mais recente", "menos recente"];
+    const compatibleOrderByText = ["price ASC", "price DESC", `"createdAt" DESC`, `"createdAt" ASC`];
+
+    const orderByText = !orderBy ? "RANDOM()" : compatibleOrderByText[possibleOrderByOptions.indexOf(orderBy)];
 
     queryText += `
     GROUP BY
@@ -94,7 +133,7 @@ async function get(filters = {}) {
             size,
             quantity,
             "createdAt"
-    ORDER BY RANDOM()
+    ORDER BY ${orderByText}
     `;
 
     if (!!limit) {
@@ -102,7 +141,7 @@ async function get(filters = {}) {
         queryText += ` LIMIT $${queryArray.length}`
     }
 
-    const result = await connection.query(`${queryText};`,queryArray);
+    const result = await connection.query(`${queryText};`, queryArray);
 
     return result.rows
 }

@@ -11,8 +11,17 @@ function removeDuplicatesInArray(arr) {
         return arr.indexOf(item) == idx;
     })
 }
+
+function translateDiacriticsQuery(variable) {
+    const specialCharacters = "ÁÉÍÓÚáéíóúâêîôûàèìòùÇç".split('').join(",");
+    const charactersToReplace = "AEIOUaeiouaeiouaeiouCc".split('').join(",");
+    return `translate(${variable},'${specialCharacters}','${charactersToReplace}')`;
+}
+
+
 export {
     randomIntFromInterval,
     areDuplicatesInArray,
     removeDuplicatesInArray,
+    translateDiacriticsQuery,
 }
