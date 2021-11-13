@@ -78,7 +78,7 @@ async function get(filters = {}) {
 
     if (!!searchedName) {
         queryArray.push(`%${searchedName}%`);
-        queryText += ` AND aux.name iLIKE $${queryArray.length}`
+        queryText += ` AND ${translateDiacriticsQuery("aux.name")} iLIKE ${translateDiacriticsQuery(`$${queryArray.length}`)}`
     }
 
     if (!!colors && !!colors.length) {

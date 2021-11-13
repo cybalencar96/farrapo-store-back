@@ -22,7 +22,7 @@ describe('ITEMS ENTITY', () => {
     let fakeToken;
     let fakeCreatedItem;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         await db.clear([
             'purchase_history',
             'itens_and_categories',
@@ -33,15 +33,16 @@ describe('ITEMS ENTITY', () => {
             'sessions',
             'users',
         ]);
-        await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
-        await db.sizes.add(validBody.sizeName);
+        await db.colors.add([{ colorName: validBody.colorName, hexCode: fakeHexCode }]);
+        await db.sizes.add([validBody.sizeName]);
         await db.categories.add(validBody.categories);
         fakeCreatedItem = await db.items.add({
             ...validBody,
             categories: validBody.categories.slice(0,3), // for better predicting which categories will be more popular from user history
             createdAt: new Date(),
-        }) 
+        })
         const user = await db.users.add(fakeUser);
+        console.log("cheguei aqui!")
         fakeToken = await db.users.createSession(user.id);
         await db.purchaseHistory.add({
             userId: user.id,
@@ -50,6 +51,7 @@ describe('ITEMS ENTITY', () => {
             price: fakePaidPrice,
             date: new Date(),
         })
+        
     });
 
     afterAll(async () => {
@@ -195,7 +197,7 @@ describe('ITEMS ENTITY', () => {
                     id: expect.anything(),
                     name: validBody.name,
                     description: validBody.description,
-                    price: String(validBody.price),
+                    price: validBody.price.toFixed(2),
                     color: validBody.colorName,
                     size: validBody.sizeName,
                     categories: expect.anything(),

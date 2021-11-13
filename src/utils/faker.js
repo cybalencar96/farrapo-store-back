@@ -56,16 +56,21 @@ function getFakeCategories() {
     return categories;
 }
 
+function getFakeDate() {
+    return faker.date.between("12/31/2012", "12/31/2020");
+}
+
 function getValidInsertionItemsBody() {
     return ({
         name: faker.lorem.words(3),
         description: faker.lorem.words(6),
         price: randomIntFromInterval(0, 10000)/100,
         colorName: faker.vehicle.color(),
-        sizeName: faker.lorem.word(2),
+        sizeName: faker.lorem.word(3),
         quantity: randomIntFromInterval(1, 100),
         imageUrl: faker.image.fashion() + ".png",
         categories: getFakeCategories(),
+        createdAt: getFakeDate()
     });
 }
 
@@ -93,6 +98,34 @@ function getInvalidCategory(validBody) {
     return invalidCategory;
 }
 
+function getRandomNumberOfFiltersAndItens() {
+    const numberOfitems = randomIntFromInterval(5, 15);
+    const [items, categories, sizes, colors, names] = [[], [], [], [], []];
+    for (let i = 0; i < numberOfitems; i++) {
+        const validBody = getValidInsertionItemsBody()
+        items.push(validBody);
+        validBody.categories.forEach(category => {
+            if (!categories.includes(category)) {
+                categories.push(category);
+            }
+        });
+        if (!sizes.includes(validBody.sizeName)) {
+            sizes.push(validBody.sizeName);
+        }
+        if (!colors.includes(validBody.colorName)) {
+            const previousSize = colors.length;
+            while (colors.length === previousSize) {
+                const fakeHexCode = getFakeHexCode();
+                if (!colors.find(({ hexCode }) => hexCode === fakeHexCode)) {
+                    colors.push({colorName: validBody.colorName, hexCode: fakeHexCode});
+                }
+            }
+        }
+        names.push(validBody.name);
+    }
+    return { items, categories, sizes, colors, names };
+}
+
 export {
     getFakeUser,
     getInvalidFakeUser,
@@ -102,4 +135,6 @@ export {
     getInvalidSize,
     getInvalidCategory,
     getFakeUuid,
+    getFakeDate,
+    getRandomNumberOfFiltersAndItens,
 };
