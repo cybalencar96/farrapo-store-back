@@ -31,6 +31,7 @@ import {
 } from "./schemas/items.js"
 import { addToCart, updateQty, getUserCart } from './controllers/cart.js';
 import { postCartSchema, putCartQtySchema, getClientCartSchema } from './schemas/cart.js';
+import { getPurchaseHistory } from './controllers/purchaseHistory.js';
 
 const app = express()
 app.use(express.json());
@@ -48,6 +49,8 @@ app.get('/items/:id', validateParams(getItemSchema), getItem);
 app.post('/cart', validateBody(postCartSchema) ,addToCart);
 app.put('/cart', validateBody(putCartQtySchema), updateQty);
 app.get('/cart', validateQuery(getClientCartSchema), getUserCart);
+
+app.get('/purchase-history', validateHeaders(getAuthorizationSchema), getPurchaseHistory);
 
 app.post('/signup', validateBody(signUpSchema), signUp);
 app.post('/signin', validateBody(signInSchema), auth, signIn);
