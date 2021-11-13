@@ -181,6 +181,7 @@ describe('ITEMS ENTITY', () => {
             expect(result.body).toEqual(expect.objectContaining(obj));
         });
     });
+    
     describe('route GET /items', () => {
         test('should return 400 when invalid query', async () => {
             const result = await supertest(app).get('/items/qualquercoisa=1')
