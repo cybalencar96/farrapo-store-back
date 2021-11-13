@@ -90,6 +90,12 @@ async function logOut(req, res) {
     const token = res.locals.token
 
     try {
+        const user = await db.users.get('session', token);
+        if (!user) {
+            return res.sendStatus(304);
+        }
+
+        await db.cart.deleteUserCart({ userId: user.user_id});
         await db.users.removeSessions('byToken', token);
         
         return res.sendStatus(200);

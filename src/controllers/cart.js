@@ -96,8 +96,13 @@ async function getUserCart(req, res) {
     }
 }
 
+async function deleteClientCart(req, res) {
+
+}
+
 export {
     addToCart,
     updateQty,
     getUserCart,
+    deleteClientCart,
 }

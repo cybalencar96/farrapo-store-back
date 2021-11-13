@@ -135,12 +135,20 @@ async function changeQty(qtyInfo) {
     return connection.query(`UPDATE cart SET quantity = $1 WHERE id = $2`, [quantity, cartId]);
 }
 
+async function deleteUserCart ({userId, visitorId}) {
+    const clientId = userId ? userId : visitorId;
+    const clientColumn = userId ? 'user_id' : 'visitor_id';
+
+    return connection.query(`DELETE FROM cart WHERE ${clientColumn} = $1`, [clientId]);
+}
+
 const cartFatory = {
     getCartFromUser,
     addItem,
     getItemQtyInCart,
     changeQty,
     get,
+    deleteUserCart,
 }
 
 

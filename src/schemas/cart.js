@@ -17,8 +17,14 @@ const getClientCartSchema = joi.object({
     visitorToken: joi.string().min(36).max(36),
 });
 
+const deleteClientCartSchema = joi.object({
+    userId: joi.number().positive(),
+    visitorToken: joi.string().min(36).max(36),
+});
+
 export {
     postCartSchema,
     putCartQtySchema,
     getClientCartSchema,
+    deleteClientCartSchema,
 }
