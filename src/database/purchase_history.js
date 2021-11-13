@@ -1,11 +1,15 @@
 import connection from "./connection.js";
 
 async function add({ userId, itemId, quantity, price, date }) {
-    await connection.query(`
-        INSERT INTO purchase_history (user_id, item_id, quantity, price, date) VALUES ($1,$2,$3,$4,$5);`,
-        [userId, itemId, quantity, price, date]
-    );
-    return;
+    const params = [userId, itemId, quantity, price];
+    date ? params.push(date) : '';
+
+    const result = await connection.query(`
+        INSERT INTO purchase_history (user_id, item_id, quantity, price ${date ? ', date': ''}) 
+        VALUES ($1,$2,$3,$4 ${date ? ', $5' : ''}) RETURNING *;
+    `, params);
+
+    return result.rows[0];
 }
 
 async function get(token) {

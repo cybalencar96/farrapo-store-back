@@ -24,11 +24,13 @@ afterAll(async () => {
 describe('USERS ENTITY', () => {
     let user;
     let token;
+    let gender;
 
     beforeEach(async () => {
-        await db.clear(["sessions", "users"]);
-        user = await db.users.add(fakeUser2);
-        token = await db.users.createSession(user.id)
+        await db.clear(["sessions", "users", 'genders']);
+        gender = await db.genders.add('not_said');
+        user = await db.users.add({ ...fakeUser2, genderId: gender.id });
+        token = await db.users.createSession(user.id);
     });
 
     describe('route POST /signup', () => {

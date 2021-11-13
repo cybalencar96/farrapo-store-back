@@ -5,7 +5,6 @@ import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
 import { getValidInsertionItemsBody, getFakeHexCode, getInvalidColor, getInvalidSize, getInvalidCategory, getFakeUser, getFakeUuid} from '../src/utils/faker.js';
 import { randomIntFromInterval } from '../src/utils/sharedFunctions.js';
-import { valid } from 'joi';
 
 const db = makeDbFactory();
 const validBody = getValidInsertionItemsBody();
@@ -21,6 +20,7 @@ describe('ITEMS ENTITY', () => {
 
     let fakeToken;
     let fakeCreatedItem;
+    let gender;
 
     beforeAll(async () => {
         await db.clear([
@@ -32,6 +32,7 @@ describe('ITEMS ENTITY', () => {
             'sizes',
             'sessions',
             'users',
+            'genders',
         ]);
         await db.colors.add([{ colorName: validBody.colorName, hexCode: fakeHexCode }]);
         await db.sizes.add([validBody.sizeName]);
@@ -41,8 +42,9 @@ describe('ITEMS ENTITY', () => {
             categories: validBody.categories.slice(0,3), // for better predicting which categories will be more popular from user history
             createdAt: new Date(),
         })
-        const user = await db.users.add(fakeUser);
-        console.log("cheguei aqui!")
+        gender = await db.genders.add('not_said');
+        const user = await db.users.add({ ...fakeUser, genderId: gender.id });
+        
         fakeToken = await db.users.createSession(user.id);
         await db.purchaseHistory.add({
             userId: user.id,
@@ -184,6 +186,7 @@ describe('ITEMS ENTITY', () => {
             expect(result.body).toEqual(expect.objectContaining(obj));
         });
     });
+    
     describe('route GET /items', () => {
         test('should return 400 when invalid query', async () => {
             const result = await supertest(app).get('/items/qualquercoisa=1')
