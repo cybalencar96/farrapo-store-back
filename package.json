@@ -7,6 +7,7 @@
   "scripts": {
     "start": "NODE_ENV=prod node ./src/server.js",
     "dev": "NODE_ENV=dev nodemon ./src/server.js",
+    "test:e2e": "NODE_ENV=test nodemon ./src/server.js",
     "test": "NODE_ENV=test npx jest -i",
     "test:watch": "NODE_ENV=test npx jest -i --watch"
   },

@@ -18,6 +18,7 @@ describe('PURCHASE-HISTORY ENTITY', () => {
     let addedPurchase;
     let sessionToken;
     let item;
+    let gender;
 
     beforeEach(async () => {
         await db.clear([
@@ -29,9 +30,11 @@ describe('PURCHASE-HISTORY ENTITY', () => {
             'sizes',
             'sessions',
             'users',
+            'genders',
         ]);
 
-        user = await db.users.add(fakeUser);
+        gender = await db.genders.add('not_said');
+        user = await db.users.add({ ...fakeUser, genderId: gender.id });
         sessionToken = await db.users.createSession(user.id);
 
         await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });

@@ -20,6 +20,7 @@ describe('ITEMS ENTITY', () => {
 
     let fakeToken;
     let fakeCreatedItem;
+    let gender;
 
     beforeEach(async () => {
         await db.clear([
@@ -31,16 +32,21 @@ describe('ITEMS ENTITY', () => {
             'sizes',
             'sessions',
             'users',
+            'genders',
         ]);
         await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
         await db.sizes.add(validBody.sizeName);
+
         await db.categories.add(validBody.categories);
         fakeCreatedItem = await db.items.add({
             ...validBody,
             categories: validBody.categories.slice(0,3), // for better predicting which categories will be more popular from user history
             createdAt: new Date(),
-        }) 
-        const user = await db.users.add(fakeUser);
+        }) ;
+
+        gender = await db.genders.add('not_said');
+        const user = await db.users.add({ ...fakeUser, genderId: gender.id });
+        
         fakeToken = await db.users.createSession(user.id);
         await db.purchaseHistory.add({
             userId: user.id,
