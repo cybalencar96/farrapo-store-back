@@ -1,8 +1,16 @@
 import connection from "./connection.js";
 
-async function add(sizeName) {
-    const result = await connection.query(`INSERT INTO sizes (name) VALUES ($1) RETURNING *;`,[sizeName])
-    return result.rows[0];
+async function add(sizes) {
+    let queryText = "INSERT INTO sizes (name) VALUES ";
+    sizes.forEach((size, index) => {
+        queryText += `($${index + 1})`;
+        if (index !== sizes.length - 1) {
+            queryText += ", ";
+        }
+    })
+    queryText += "RETURNING *"
+    const result = await connection.query(`${queryText};`, sizes);
+    return result.rows;
 }
 
 async function get(sizeName) {

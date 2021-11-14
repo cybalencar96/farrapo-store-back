@@ -5,9 +5,13 @@ const db = makeDbFactory();
 
 async function getItems(req, res) {
     try {
-        const items = await db.items.get({...req.query, limit: 20});
+        const adjustedQuery = {
+            colors: req.query.color ? [req.query.color] : '',
+            categories: req.query.category ? [req.query.category] : '',
+        }
+        const items = await db.items.get({...adjustedQuery, limit: 20});
 
-        const structuredItems = items.map(item => ({...item, categories: item.categories.split(',')}))
+        const structuredItems = items;
         return res.send(structuredItems);
     } catch (error) {
         console.log(error);
@@ -35,8 +39,13 @@ async function getItem(req, res) {
 async function addCategoryRandomItens(homepageItems, categories) {
     for (let i = 0; i < categories.length; i++) {
         const category = categories[i];
-        const itensForSelectedCategory = await db.items.get({ category, limit: 10 });
-        homepageItems.push({ title: category, forwardMessage: "Quero ver mais!", itens: itensForSelectedCategory });
+        const itemsForSelectedCategory = await db.items.get({ categories: [category], limit: 10 });
+        homepageItems.push({
+            title: category,
+            forwardMessage: "Quero ver mais!",
+            type: "categories",
+            itens: itemsForSelectedCategory
+        });
     }
     return;
 }
@@ -63,11 +72,11 @@ async function getHomepageItems(req, res) {
             }
         }
         const itensForMaximumPrice = await db.items.get({ maximumPrice, limit: 10 });
-        const itensForSelectedColor = await db.items.get({ color: selectedColor, limit: 10 });
+        const itensForSelectedColor = await db.items.get({ colors: [selectedColor], limit: 10 });
 
         const homepageItems = [
-            { title: `Até R$${maximumPrice},00`, forwardMessage: "Que pechincha!", itens: itensForMaximumPrice },
-            { title: `Que tal um pouco de ${selectedColor.toLowerCase()}`, forwardMessage: "Quero ver mais!", itens: itensForSelectedColor },
+            { title: `Até R$${maximumPrice},00`, forwardMessage: "Que pechincha!", type: "price", itens: itensForMaximumPrice },
+            { title: `Que tal um pouco de ${selectedColor.toLowerCase()}`, type: "colors", forwardMessage: "Quero ver mais!", itens: itensForSelectedColor },
         ]
 
         await addCategoryRandomItens(homepageItems, selectedCategories);

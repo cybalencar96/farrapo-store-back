@@ -29,6 +29,8 @@ import {
     getItemSchema,
     getItemsSchema,
 } from "./schemas/items.js"
+import { getSearchItems } from './controllers/search.js';
+import { getFilters } from './controllers/filters.js';
 import { addToCart, updateQty, getUserCart, deleteClientCart } from './controllers/cart.js';
 import { postCartSchema, putCartQtySchema, getClientCartSchema, deleteClientCartSchema } from './schemas/cart.js';
 import { getPurchaseHistory } from './controllers/purchaseHistory.js';
@@ -46,6 +48,9 @@ app.post('/items', validateBody(itemsSchema), addItems);
 app.get('/items', validateQuery(getItemsSchema), getItems);
 app.get('/homepage/items', getHomepageItems);
 app.get('/items/:id', validateParams(getItemSchema), getItem);
+
+app.get('/search/:searchedName&:categories&:colors&:sizes&:price&:orderBy', getSearchItems);
+app.get('/filters', getFilters);
 
 app.post('/cart', validateBody(postCartSchema) ,addToCart);
 app.put('/cart', validateBody(putCartQtySchema), updateQty);

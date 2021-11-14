@@ -28,8 +28,8 @@ describe('ENTITY CART', () => {
 
     beforeEach(async () => {
         
-        await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
-        await db.sizes.add(validBody.sizeName);
+        await db.colors.add([{ colorName: validBody.colorName, hexCode: fakeHexCode }]);
+        await db.sizes.add([validBody.sizeName]);
         await db.categories.add(validBody.categories);
         
         visitor = await db.visitors.add(validVisitorToken);

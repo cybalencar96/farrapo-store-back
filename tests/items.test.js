@@ -22,7 +22,7 @@ describe('ITEMS ENTITY', () => {
     let fakeCreatedItem;
     let gender;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         await db.clear([
             'purchase_history',
             'itens_and_categories',
@@ -34,16 +34,14 @@ describe('ITEMS ENTITY', () => {
             'users',
             'genders',
         ]);
-        await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
-        await db.sizes.add(validBody.sizeName);
-
+        await db.colors.add([{ colorName: validBody.colorName, hexCode: fakeHexCode }]);
+        await db.sizes.add([validBody.sizeName]);
         await db.categories.add(validBody.categories);
         fakeCreatedItem = await db.items.add({
             ...validBody,
             categories: validBody.categories.slice(0,3), // for better predicting which categories will be more popular from user history
             createdAt: new Date(),
-        }) ;
-
+        })
         gender = await db.genders.add('not_said');
         const user = await db.users.add({ ...fakeUser, genderId: gender.id });
         
@@ -55,6 +53,7 @@ describe('ITEMS ENTITY', () => {
             price: fakePaidPrice,
             date: new Date(),
         })
+        
     });
 
     afterAll(async () => {
@@ -136,11 +135,11 @@ describe('ITEMS ENTITY', () => {
         test(`If token is sent, should return 200 and an array of 5 objects, but titles must match data from user's purchase History`, async () => {
             
             const expectedResult = [
-                { title: `Até R$${fakePaidPrice},00`, forwardMessage: "Que pechincha!", itens: expect.any(Array) },
-                { title: `Que tal um pouco de ${fakeCreatedItem.colorName.toLowerCase()}`, forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
-                { title: fakeCreatedItem.categories[0], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
-                { title: fakeCreatedItem.categories[1], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
-                { title: fakeCreatedItem.categories[2], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: `Até R$${fakePaidPrice},00`, type: "price", forwardMessage: "Que pechincha!", itens: expect.any(Array) },
+                { title: `Que tal um pouco de ${fakeCreatedItem.colorName.toLowerCase()}`, type: "colors", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[0], type: "categories", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[1], type: "categories", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[2], type: "categories", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
             ];
 
             const result = await supertest(app)
@@ -201,7 +200,7 @@ describe('ITEMS ENTITY', () => {
                     id: expect.anything(),
                     name: validBody.name,
                     description: validBody.description,
-                    price: String(validBody.price.toFixed(2)),
+                    price: validBody.price.toFixed(2),
                     color: validBody.colorName,
                     size: validBody.sizeName,
                     categories: expect.anything(),
@@ -211,7 +210,7 @@ describe('ITEMS ENTITY', () => {
             };
 
             expect(result.status).toEqual(200);
-            expect(result.body.length).toEqual(1);
+            expect(result.body.length).toEqual(2); //just sent and send on previous test
             expect(result.body[0]).toEqual(expect.objectContaining(expectedObject));
             expect(Array.isArray(result.body[0].categories)).toBeTruthy();
         });

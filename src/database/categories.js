@@ -8,8 +8,9 @@ async function add(categories) {
             queryText += ", ";
         }
     })
+    queryText += "RETURNING *"
     const result = await connection.query(`${queryText};`, categories);
-    return;
+    return result.rows;
 }
 
 async function get({categories, randomCategory, limit}) {

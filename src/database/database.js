@@ -33,6 +33,16 @@ export default function makeDbFactory() {
         connection.end();
     }
 
+    async function getAllFilters() {
+        const singleQuery = (table) => `SELECT name FROM ${table};`;
+        let queryText = singleQuery("categories");
+        queryText += singleQuery("colors");
+        queryText += singleQuery("sizes");
+
+        const results = await connection.query(queryText);
+        return results.map(({ rows }) => rows.map( ({name}) => name));
+    }
+
     async function clear(tables) {
         let queryText = '';
         tables.forEach(table => {
@@ -55,5 +65,6 @@ export default function makeDbFactory() {
         insertIntoTable,
         endConnection,
         clear,
+        getAllFilters,
     }
 };
