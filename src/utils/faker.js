@@ -38,7 +38,7 @@ function getFakeHexCode() {
 }
 
 function getFakeCategories() {
-    const numberOfCategories = randomIntFromInterval(3, 6);
+    const numberOfCategories = 3;
     const categories = [];
     for (let i = 0; i < numberOfCategories; i++) {
         let counter = 0;
@@ -66,7 +66,6 @@ function getValidInsertionItemsBody() {
         quantity: randomIntFromInterval(1, 100),
         imageUrl: faker.image.fashion() + ".png",
         categories: getFakeCategories(),
-        createdAt: getFakeDate()
     });
 }
 
@@ -95,7 +94,7 @@ function getInvalidCategory(validBody) {
 }
 
 function getRandomNumberOfFiltersAndItens() {
-    const numberOfitems = randomIntFromInterval(5, 15);
+    const numberOfitems = randomIntFromInterval(15, 45);
     const [items, categories, sizes, colors, names] = [[], [], [], [], []];
     for (let i = 0; i < numberOfitems; i++) {
         const validBody = getValidInsertionItemsBody()
@@ -108,7 +107,7 @@ function getRandomNumberOfFiltersAndItens() {
         if (!sizes.includes(validBody.sizeName)) {
             sizes.push(validBody.sizeName);
         }
-        if (!colors.includes(validBody.colorName)) {
+        if (!colors.map( ({colorName}) => colorName ).includes(validBody.colorName)) {
             const previousSize = colors.length;
             while (colors.length === previousSize) {
                 const fakeHexCode = getFakeHexCode();

@@ -12,7 +12,7 @@ async function getFilters(req, res) {
         });
     } catch (error) {
         console.log(error);
-        resizeBy.sendStatus(500)
+        res.sendStatus(500)
     }
 
 }

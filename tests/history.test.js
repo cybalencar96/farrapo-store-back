@@ -37,8 +37,8 @@ describe('PURCHASE-HISTORY ENTITY', () => {
         user = await db.users.add({ ...fakeUser, genderId: gender.id });
         sessionToken = await db.users.createSession(user.id);
 
-        await db.colors.add({ colorName: validBody.colorName, hexCode: fakeHexCode });
-        await db.sizes.add(validBody.sizeName);
+        await db.colors.add([{ colorName: validBody.colorName, hexCode: fakeHexCode }]);
+        await db.sizes.add([validBody.sizeName]);
         await db.categories.add(validBody.categories);
         item = await db.items.add({
             ...validBody,

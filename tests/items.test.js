@@ -135,11 +135,11 @@ describe('ITEMS ENTITY', () => {
         test(`If token is sent, should return 200 and an array of 5 objects, but titles must match data from user's purchase History`, async () => {
             
             const expectedResult = [
-                { title: `Até R$${fakePaidPrice},00`, forwardMessage: "Que pechincha!", itens: expect.any(Array) },
-                { title: `Que tal um pouco de ${fakeCreatedItem.colorName.toLowerCase()}`, forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
-                { title: fakeCreatedItem.categories[0], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
-                { title: fakeCreatedItem.categories[1], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
-                { title: fakeCreatedItem.categories[2], forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: `Até R$${fakePaidPrice},00`, type: "price", forwardMessage: "Que pechincha!", itens: expect.any(Array) },
+                { title: `Que tal um pouco de ${fakeCreatedItem.colorName.toLowerCase()}`, type: "colors", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[0], type: "categories", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[1], type: "categories", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
+                { title: fakeCreatedItem.categories[2], type: "categories", forwardMessage: "Quero ver mais!", itens: expect.any(Array) },
             ];
 
             const result = await supertest(app)
@@ -210,7 +210,7 @@ describe('ITEMS ENTITY', () => {
             };
 
             expect(result.status).toEqual(200);
-            expect(result.body.length).toEqual(1);
+            expect(result.body.length).toEqual(2); //just sent and send on previous test
             expect(result.body[0]).toEqual(expect.objectContaining(expectedObject));
             expect(Array.isArray(result.body[0].categories)).toBeTruthy();
         });

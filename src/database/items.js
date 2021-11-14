@@ -143,7 +143,7 @@ async function get(filters = {}) {
 
     const result = await connection.query(`${queryText};`, queryArray);
 
-    return result.rows
+    return result.rows.map(item => ({...item, categories: item.categories.split(',')}))
 }
 
 async function add(itemData) {

@@ -11,7 +11,7 @@ async function getItems(req, res) {
         }
         const items = await db.items.get({...adjustedQuery, limit: 20});
 
-        const structuredItems = items.map(item => ({...item, categories: item.categories.split(',')}))
+        const structuredItems = items;
         return res.send(structuredItems);
     } catch (error) {
         console.log(error);
@@ -39,8 +39,13 @@ async function getItem(req, res) {
 async function addCategoryRandomItens(homepageItems, categories) {
     for (let i = 0; i < categories.length; i++) {
         const category = categories[i];
-        const itensForSelectedCategory = await db.items.get({ categories: [category], limit: 10 });
-        homepageItems.push({ title: category, forwardMessage: "Quero ver mais!", type: "categories", itens: itensForSelectedCategory });
+        const itemsForSelectedCategory = await db.items.get({ categories: [category], limit: 10 });
+        homepageItems.push({
+            title: category,
+            forwardMessage: "Quero ver mais!",
+            type: "categories",
+            itens: itemsForSelectedCategory
+        });
     }
     return;
 }
