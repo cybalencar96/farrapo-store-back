@@ -12,7 +12,7 @@ function validateBody(schema) {
 
 function validateQuery(schema) {
     return function (req, res, next) {
-        const queryError = schema.validate(req.params).error;
+        const queryError = schema.validate(req.query).error;
         if (queryError) {
             return res.status(400).send(queryError.details[0].message);
         }

@@ -55,8 +55,8 @@ app.get('/filters', getFilters);
 app.post('/cart', validateBody(postCartSchema), addToCart);
 app.get('/cart', validateQuery(getClientCartSchema), getUserCart);
 app.put('/cart', validateBody(putCartQtySchema), updateQty);
-app.delete('/cart/item/:clientType&:token&:itemId', validateQuery(deleteItemFromClientCartSchema), removeItemFromCart);
-app.delete('/cart/all/:clientType&:token', validateQuery(deleteClientCartSchema), deleteClientCart);
+app.delete('/cart/item/:clientType&:token&:itemId', validateParams(deleteItemFromClientCartSchema), removeItemFromCart);
+app.delete('/cart/all/:clientType&:token', validateParams(deleteClientCartSchema), deleteClientCart);
 
 app.get('/purchase-history', validateHeaders(getAuthorizationSchema), getPurchaseHistory);
 
