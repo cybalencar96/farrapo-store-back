@@ -31,8 +31,8 @@ import {
 } from "./schemas/items.js"
 import { getSearchItems } from './controllers/search.js';
 import { getFilters } from './controllers/filters.js';
-import { addToCart, updateQty, getUserCart, deleteClientCart } from './controllers/cart.js';
-import { postCartSchema, putCartQtySchema, getClientCartSchema, deleteClientCartSchema } from './schemas/cart.js';
+import { addToCart, updateQty, getUserCart, deleteClientCart, removeItemFromCart } from './controllers/cart.js';
+import { postCartSchema, putCartQtySchema, getClientCartSchema, deleteClientCartSchema, deleteItemFromClientCartSchema } from './schemas/cart.js';
 import { getPurchaseHistory } from './controllers/purchaseHistory.js';
 import { setupTestDb } from './controllers/tests.js';
 
@@ -52,10 +52,11 @@ app.get('/items/:id', validateParams(getItemSchema), getItem);
 app.get('/search/:searchedName&:categories&:colors&:sizes&:price&:orderBy', getSearchItems);
 app.get('/filters', getFilters);
 
-app.post('/cart', validateBody(postCartSchema) ,addToCart);
-app.put('/cart', validateBody(putCartQtySchema), updateQty);
+app.post('/cart', validateBody(postCartSchema), addToCart);
 app.get('/cart', validateQuery(getClientCartSchema), getUserCart);
-app.delete('/cart', validateQuery(deleteClientCartSchema), deleteClientCart)
+app.put('/cart', validateBody(putCartQtySchema), updateQty);
+app.delete('/cart/item/:clientType&:token&:itemId', validateQuery(deleteItemFromClientCartSchema), removeItemFromCart);
+app.delete('/cart/all/:clientType&:token', validateQuery(deleteClientCartSchema), deleteClientCart);
 
 app.get('/purchase-history', validateHeaders(getAuthorizationSchema), getPurchaseHistory);
 

@@ -31,7 +31,6 @@ async function addToCart(req, res) {
 
         const user = await db.users.get('byId', userId)
         if (userId && !user) {
-            console.log(userId, !user)
             return res.status(404).send('user not found');
         }
 
@@ -49,23 +48,27 @@ async function addToCart(req, res) {
 }
 
 async function updateQty(req, res) {
-    const { cartId, quantity } = req.body
+    const { clientType, token, itemId, quantity } = req.body
+
+
+    if ((clientType !== "user" && clientType !== "visitor") || quantity <= 0 ) {
+        return res.sendStatus(401);
+    }
+
     try {
-        const cartItem = await db.cart.get({ id: cartId });
-        if (!cartItem) {
-            return res.status(404).send('cart item not found');
-        }
-        
-        const itemInCart = await db.cart.getItemQtyInCart(cartItem.item_id);
-        if (itemInCart && quantity > itemInCart.maxQty) {
-            return res.status(403).send('quantity surpasses limit');
+        const requiredItem = await db.items.get({ id: itemId })
+        if (!requiredItem || quantity > requiredItem.quantity) {
+            return res.sendStatus(401);
         }
 
-        await db.cart.changeQty(req.body);
-        return res.sendStatus(200)  
+        const updatedItem = await db.cart.updateItemQty({ clientType, token, itemId, quantity });
+        if (!updatedItem) {
+            return res.sendStatus(404);
+        }
+        return res.send(updatedItem);
     } catch (error) {
         console.log(error);
-        return res.sendStatus(500);
+        res.sendStatus(500);
     }
 }
 
@@ -96,13 +99,55 @@ async function getUserCart(req, res) {
     }
 }
 
-async function deleteClientCart(req, res) {
+async function removeItemFromCart(req, res) {
+    const {
+        clientType,
+        token,
+        itemId
+    } = req.params;
 
+    if (clientType !== "user" && clientType !== "visitor") {
+        return res.sendStatus(401);
+    }
+
+    try {
+        const deletedItem = await db.cart.deleteItemFromUserCart({clientType, token, itemId});
+        if (!deletedItem) {
+            return res.sendStatus(404);
+        }
+        return res.send(deletedItem);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+async function deleteClientCart(req, res) {
+    const {
+        clientType,
+        token,
+    } = req.params;
+
+    if (clientType !== "user" && clientType !== "visitor") {
+        return res.sendStatus(401);
+    }
+
+    try {
+        const deletedCart = await db.cart.deleteUserCart({ clientType, token });
+        if (!deletedCart) {
+            return res.sendStatus(404);
+        }
+        return res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 }
 
 export {
     addToCart,
     updateQty,
     getUserCart,
+    removeItemFromCart,
     deleteClientCart,
 }

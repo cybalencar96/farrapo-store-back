@@ -71,7 +71,7 @@ async function addItem(cartInfos = {}) {
         LEFT JOIN users ON users.id = cart.user_id
         LEFT JOIN itens ON itens.id = cart.item_id
         LEFT JOIN sizes ON sizes.id = itens.size_id
-        WHERE cart.id = $1
+        WHERE cart.id = $1;
     `,[result.rows[0].id])
 
     return addedItem.rows[0];
@@ -99,7 +99,7 @@ async function getCartFromUser({userId, visitorId}) {
         LEFT JOIN users ON users.id = cart.user_id
         LEFT JOIN itens ON itens.id = cart.item_id
         LEFT JOIN sizes ON sizes.id = itens.size_id
-        WHERE ${clientColumn} = $1
+        WHERE ${clientColumn} = $1;
     `;
 
     const cartItems = await connection.query(query,[clientId]);
@@ -118,7 +118,7 @@ async function getItemQtyInCart(itemId) {
         WHERE itens.id = $1
         GROUP BY 
             itens.id
-            
+           ; 
     `
 
     const result = await connection.query(query,[itemId]);
@@ -126,29 +126,49 @@ async function getItemQtyInCart(itemId) {
     return result.rows[0];
 }
 
-async function changeQty(qtyInfo) {
-    const {
-        quantity,
-        cartId
-    } = qtyInfo;
+async function updateItemQty({ clientType, token, itemId, quantity }) {
+    const cartColumn = clientType.toLowerCase() === "user" ? 'user_id' : 'visitor_id';
+    const searchTableColumn = clientType.toLowerCase() === "user" ? 'user_id' : 'id';
+    const tableToLookFrom = clientType.toLowerCase() === "user" ? "sessions" : "visitors";
 
-    return connection.query(`UPDATE cart SET quantity = $1 WHERE id = $2`, [quantity, cartId]);
+    const updatedItem = await connection.query(`
+    UPDATE cart SET quantity = $1
+    WHERE ${cartColumn} = (SELECT ${searchTableColumn} FROM ${tableToLookFrom} WHERE token = $2 ) AND item_id = $3 RETURNING *;`, [quantity, token, itemId]);
+    return updatedItem.rows[0];
 }
 
-async function deleteUserCart ({userId, visitorId}) {
-    const clientId = userId ? userId : visitorId;
-    const clientColumn = userId ? 'user_id' : 'visitor_id';
+async function deleteUserCart ({clientType, token}) {
+    const cartColumn = clientType.toLowerCase() === "user" ? 'user_id' : 'visitor_id';
+    const searchTableColumn = clientType.toLowerCase() === "user" ? 'user_id' : 'id';
+    const tableToLookFrom = clientType.toLowerCase() === "user" ? "sessions" : "visitors";
 
-    return connection.query(`DELETE FROM cart WHERE ${clientColumn} = $1`, [clientId]);
+    const result = await connection.query(`
+        DELETE FROM cart
+        WHERE ${cartColumn} = (SELECT ${searchTableColumn} FROM ${tableToLookFrom} WHERE token = $1 ) RETURNING *;`, [token]);
+    return result.rowCount;
 }
+
+async function deleteItemFromUserCart({clientType, token, itemId}) {
+    const cartColumn = clientType.toLowerCase() === "user" ? 'user_id' : 'visitor_id';
+    const searchTableColumn = clientType.toLowerCase() === "user" ? 'user_id' : 'id';
+    const tableToLookFrom = clientType.toLowerCase() === "user" ? "sessions" : "visitors";
+
+    const result = await connection.query(`
+        DELETE FROM cart
+        WHERE ${cartColumn} = (SELECT ${searchTableColumn} FROM ${tableToLookFrom} WHERE token = $1 ) AND item_id = $2 RETURNING *;`, [token, itemId]);
+    return result.rows[0];
+}
+
+
 
 const cartFatory = {
     getCartFromUser,
     addItem,
     getItemQtyInCart,
-    changeQty,
+    updateItemQty,
     get,
     deleteUserCart,
+    deleteItemFromUserCart,
 }
 
 

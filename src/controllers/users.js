@@ -95,7 +95,7 @@ async function logOut(req, res) {
             return res.sendStatus(304);
         }
 
-        await db.cart.deleteUserCart({ userId: user.user_id});
+        await db.cart.deleteUserCart({ clientType: "user", token});
         await db.users.removeSessions('byToken', token);
         
         return res.sendStatus(200);
