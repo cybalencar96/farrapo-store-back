@@ -12,6 +12,22 @@ async function add({ userId, itemId, quantity, price, date }) {
     return result.rows[0];
 }
 
+async function addSeveral(items) {
+    let queryText = "INSERT INTO purchase_history (user_id, item_id, quantity, price, date) VALUES "
+    const params = [];
+    const today = new Date();
+    items.forEach(({userId, itemId, cartQty, price}, index) => {
+        params.push(userId, itemId, cartQty, price, today);
+        queryText += `($${params.length - 4}, $${params.length - 3}, $${params.length - 2}, $${params.length - 1}, $${params.length})`
+        if (items.length - 1 !== index) {
+            queryText += " , "
+        }
+    })
+    
+    await connection.query(`${queryText};`, params);
+    return;
+}
+
 async function get(token) {
     const firstResult = await connection.query(`
     SELECT
@@ -134,6 +150,7 @@ const historyFactory = {
     add,
     get,
     getHistoryForHomepage,
+    addSeveral,
 }
 
 export default historyFactory;

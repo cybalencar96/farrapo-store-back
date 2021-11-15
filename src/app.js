@@ -16,6 +16,7 @@ import { auth } from './middlewares/auth.js'
 import {
     validateBody,
     validateHeaders,
+    validateHeadersAndBody,
     validateParams,
     validateQuery,
 } from './middlewares/validateRequest.js';
@@ -35,6 +36,8 @@ import { addToCart, updateQty, getUserCart, deleteClientCart, removeItemFromCart
 import { postCartSchema, putCartQtySchema, getClientCartSchema, deleteClientCartSchema, deleteItemFromClientCartSchema } from './schemas/cart.js';
 import { getPurchaseHistory } from './controllers/purchaseHistory.js';
 import { setupTestDb } from './controllers/tests.js';
+import { transferFromCartToHistory } from './controllers/checkout.js';
+import { checkoutAuthorizationSchema, checkoutSchema } from './schemas/checkout.js';
 
 const app = express()
 app.use(express.json());
@@ -59,6 +62,8 @@ app.delete('/cart/item/:clientType&:token&:itemId', validateParams(deleteItemFro
 app.delete('/cart/all/:clientType&:token', validateParams(deleteClientCartSchema), deleteClientCart);
 
 app.get('/purchase-history', validateHeaders(getAuthorizationSchema), getPurchaseHistory);
+
+app.post('/checkout', validateHeadersAndBody(checkoutAuthorizationSchema, checkoutSchema), transferFromCartToHistory);
 
 app.post('/signup', validateBody(signUpSchema), signUp);
 app.post('/signin', validateBody(signInSchema), auth, signIn);
