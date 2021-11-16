@@ -49,6 +49,7 @@ function validateHeadersAndBody(headersSchema, bodySchema) {
     return function (req, res, next) {
         const headersError = headersSchema.validate(req.headers).error;
         if (headersError) {
+            console.log(headersError.details[0].message)
             return res.status(401).send(headersError.details[0].message);
         }
         
@@ -57,6 +58,7 @@ function validateHeadersAndBody(headersSchema, bodySchema) {
         const bodyError = bodySchema.validate(req.body).error;
 
         if (bodyError) {
+            console.log(bodyError.details[0].message)
             return res.status(400).send(bodyError.details[0].message);
         }
 

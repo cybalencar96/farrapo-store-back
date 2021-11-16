@@ -11,7 +11,7 @@ const testVariables = getRandomNumberOfFiltersAndItens();
 const invalidCategory = getInvalidCategory(testVariables);
 const itemsWithCreatedAt = [];
 
-describe('ITEMS ENTITY', () => {
+describe('Search ENTITY', () => {
 
     beforeAll(async () => {
         await db.colors.add(testVariables.colors);

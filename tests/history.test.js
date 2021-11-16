@@ -92,4 +92,44 @@ describe('PURCHASE-HISTORY ENTITY', () => {
             expect(result.body[0]).toEqual(expect.objectContaining(expectedObj));
         });
     });
+
+    describe('route GET /purchase-history/token', () => {
+        test('should return 401 when no token is sent', async () => {
+            const result = await supertest(app)
+                .get('/purchase-history/token')
+
+            expect(result.status).toEqual(401);
+        });
+
+        test('should return 200 and an empty array when invalid token is sent', async () => {
+            const result = await supertest(app)
+                .get('/purchase-history/token')
+                .set('Authorization', `Bearer ${sessionToken}`)
+
+            expect(result.status).toEqual(200);
+            expect(result.body.length).toEqual(0);
+        });
+
+        test('should return 200 when get history', async () => {
+            const result = await supertest(app)
+                .get('/purchase-history/token')
+                .set('Authorization', `Bearer ${addedPurchase.token}`)
+
+            const expectedObj = {
+                name: item.name,
+                description: item.description,
+                colorName: item.colorName,
+                sizeName: item.sizeName,
+                image: item.imageUrl,
+                quantity: 1,
+                price: String(item.price.toFixed(2)),
+                date: expect.anything(),
+                categories: item.categories
+            }
+
+            expect(result.status).toEqual(200);
+            expect(result.body.length).toEqual(1);
+            expect(result.body[0]).toEqual(expect.objectContaining(expectedObj));
+        });
+    });
 });

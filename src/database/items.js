@@ -201,9 +201,25 @@ async function add(itemData) {
     };
 }
 
+async function updateQuantity(items) {
+    let queryText = `UPDATE itens SET quantity = (CASE`;
+    const params = [];
+    const idIndex = []
+
+    items.forEach(({ itemId, cartQty, maxQty }) => {
+        params.push(itemId, Number(maxQty) - Number(cartQty));
+        idIndex.push(params.length - 1);
+        queryText += ` WHEN id = $${params.length - 1}::integer THEN $${params.length}::integer`;
+    })
+    queryText += ` END) WHERE id IN ($${idIndex.join(",$")});`
+    await connection.query(queryText, params);
+    return 
+}
+
 const itemsFactory = {
     get,
-    add
+    add,
+    updateQuantity,
 };
 
 export default itemsFactory;

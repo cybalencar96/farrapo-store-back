@@ -69,6 +69,20 @@ function getValidInsertionItemsBody() {
     });
 }
 
+function getValidCheckoutUserData() {
+    const validUFs = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "DO", "MA", "MT",
+        "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RR", "SC", "SP", "SE", "TO"];
+    return ({
+        name: faker.lorem.words(3),
+        cpf: randomIntFromInterval(10000000000, 99999999999),
+        adress: faker.lorem.words(3),
+        number: randomIntFromInterval(1, 1000),
+        complement: faker.lorem.words(3),
+        city: faker.lorem.words(3),
+        state: validUFs[randomIntFromInterval(0, validUFs.length - 1)]
+    });
+}
+
 function getInvalidColor(validBody) {
     let invalidColor = faker.vehicle.color();
     while (invalidColor === validBody.colorName) {
@@ -132,4 +146,5 @@ export {
     getFakeUuid,
     getFakeDate,
     getRandomNumberOfFiltersAndItens,
+    getValidCheckoutUserData,
 };

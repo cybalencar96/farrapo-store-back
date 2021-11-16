@@ -11,8 +11,8 @@ const checkoutSchema = joi.object({
         name: joi.string().min(3).required(),
         cpf: joi.number().required(),
         adress: joi.string().min(3).required(),
-        number: joi.number(),
-        complement: joi.string().min(3),
+        number: joi.any(),
+        complement: joi.any(),
         city: joi.string().min(3).required(),
         state: joi.string().min(2).max(2).required(),
     })
