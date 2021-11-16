@@ -48,7 +48,6 @@ async function signUp(req, res) {
 
 async function signIn(req, res) {
     const user = res.locals.user
-    
     try {
         const token = await db.users.createSession(user.id);
 
@@ -105,9 +104,20 @@ async function logOut(req, res) {
     }
 }
 
+async function registerVisitor(req, res) {
+    try {
+        await db.visitors.add(req.body.visitorToken);
+        res.send();
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+}
+
 export {
     signUp,
     signIn,
     getUserAuthenticated,
     logOut,
+    registerVisitor,
 };

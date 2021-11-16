@@ -87,7 +87,7 @@ describe('ENTITY CART', () => {
             expect(result.text).toEqual('send one id');
         });
 
-        test('should return 400 when visitor invalid', async () => {
+        test('should return 400 when user invalid', async () => {
             const result = await supertest(app)
                 .get('/cart?userId=1')      
 
@@ -100,7 +100,7 @@ describe('ENTITY CART', () => {
                 .get(`/cart?visitorToken=${invalidVisitorToken}`);     
 
             expect(result.status).toEqual(400);
-            expect(result.text).toEqual('token invalid');
+            expect(result.text).toEqual('visitorToken invalid');
         });
 
         test('should return 200 when get cart', async () => {

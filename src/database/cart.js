@@ -43,9 +43,6 @@ async function addItem(cartInfos = {}) {
     let visitor;
     if (visitorToken) {
         visitor = await visitorsFactory.get(visitorToken)
-        if (!visitor) {
-            visitor = await visitorsFactory.add(visitorToken);
-        } 
     }
 
     const result =  await connection.query(`
@@ -159,7 +156,13 @@ async function deleteItemFromUserCart({clientType, token, itemId}) {
     return result.rows[0];
 }
 
-
+async function transferItems({userId, visitorId}) {
+    await connection.query(`
+        UPDATE cart 
+        SET user_id = $1, visitor_id = NULL
+        WHERE visitor_id = $2;
+    `, [userId, visitorId]);
+}
 
 const cartFatory = {
     getCartFromUser,
@@ -169,6 +172,7 @@ const cartFatory = {
     get,
     deleteUserCart,
     deleteItemFromUserCart,
+    transferItems,
 }
 
 

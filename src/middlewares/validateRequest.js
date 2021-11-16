@@ -26,10 +26,12 @@ function validateHeaders(schema) {
     return function(req, res, next) {
         const headersError = schema.validate(req.headers).error;
         if (headersError) {
+
             return res.status(401).send(headersError.details[0].message);
         }
         
         res.locals.token = req.headers.authorization.replace('Bearer ','')
+
         next();
     }
 }

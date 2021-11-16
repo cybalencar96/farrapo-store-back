@@ -3,7 +3,7 @@ import makeDbFactory from "../database/database.js";
 const db = makeDbFactory();
 
 function areItemObjectsEqual(receivedItem, savedItem) {
-    const atributesToCompare = ["userId", "itemId", "cartQty", "price", "maxQty"];
+    const atributesToCompare = ["itemId", "cartQty", "price", "maxQty"];
     let areItemsEqual = true;
     for (let i = 0; i < atributesToCompare.length; i++) {
         const atribute = atributesToCompare[i];
@@ -36,13 +36,13 @@ async function transferFromCartToHistory(req, res) {
 
         for (let i = 0; i < cart.length; i++) {
             const receivedItem = cart[i];
-            const savedItem = savedCart.find(({itemId}) => itemId === receivedItem.itemId);
+            const savedItem = savedCart.find(({ itemId }) => itemId === receivedItem.itemId);
             if (!savedItem || !areItemObjectsEqual(receivedItem, savedItem)) {
-                return res.sendStatus(400);
+                return res.sendStatus(400);   
             }
         }
 
-        const token = await db.purchaseHistory.addSeveral(cart);
+        const token = await db.purchaseHistory.addSeveral(userId, cart);
         await db.cart.deleteUserCart({clientType: "user", token: res.locals.token});
         await db.items.updateQuantity(cart);
 
