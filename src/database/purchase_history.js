@@ -14,12 +14,12 @@ async function add({ userId, itemId, quantity, price, date }) {
     return result.rows[0];
 }
 
-async function addSeveral(items) {
+async function addSeveral(userId, items) {
     let queryText = "INSERT INTO purchase_history (user_id, item_id, quantity, price, date, token) VALUES "
     const params = [];
     const today = new Date();
     const token = uuid();
-    items.forEach(({userId, itemId, cartQty, price}, index) => {
+    items.forEach(({itemId, cartQty, price}, index) => {
         params.push(userId, itemId, cartQty, price, today, token);
         queryText += `($${params.length - 5}, $${params.length - 4}, $${params.length - 3}, $${params.length - 2}, $${params.length - 1}, $${params.length})`
         if (items.length - 1 !== index) {
