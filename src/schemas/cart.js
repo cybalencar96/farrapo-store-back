@@ -8,7 +8,9 @@ const postCartSchema = joi.object({
 });
 
 const putCartQtySchema = joi.object({
-    cartId: joi.number().positive().required(),
+    clientType: joi.string().min(4).max(7).required(),
+    token: joi.string().min(36).max(36).required(),
+    itemId: joi.number().positive().required(),
     quantity: joi.number().positive().required(),
 });
 
@@ -18,8 +20,14 @@ const getClientCartSchema = joi.object({
 });
 
 const deleteClientCartSchema = joi.object({
-    userId: joi.number().positive(),
-    visitorToken: joi.string().min(36).max(36),
+    clientType: joi.string().min(4).max(7).required(),
+    token: joi.string().min(36).max(36).required(),
+});
+
+const deleteItemFromClientCartSchema = joi.object({
+    clientType: joi.string().min(4).max(7).required(),
+    token: joi.string().min(36).max(36).required(),
+    itemId: joi.number().positive().required(),
 });
 
 export {
@@ -27,4 +35,5 @@ export {
     putCartQtySchema,
     getClientCartSchema,
     deleteClientCartSchema,
+    deleteItemFromClientCartSchema,
 }

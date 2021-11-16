@@ -35,6 +35,7 @@ describe('ENTITY CART', () => {
         visitor = await db.visitors.add(validVisitorToken);
         fakeCreatedItem = await db.items.add({
             ...validBody,
+            quantity: validBody.quantity + 1,
             categories: validBody.categories.slice(0,3), // for better predicting which categories will be more popular from user history
             createdAt: new Date(),
         });
@@ -126,59 +127,6 @@ describe('ENTITY CART', () => {
         });
     });
 
-    describe('route PUT /cart', () => {
-        test('should return 400 when invalid body', async () => {
-            const body = {
-                cartId: 1
-            }
-
-            const result = await supertest(app)
-                .put('/cart')
-                .send(body)
-
-            expect(result.status).toEqual(400)
-        });
-
-        test('should return 404 when cart item not found', async () => {
-            const body = {
-                quantity: fakeCreatedItem.quantity - 1,
-                cartId: 1
-            }
-
-            const result = await supertest(app)
-                .put('/cart')
-                .send(body)
-
-            expect(result.status).toEqual(404)
-        });
-
-        test('should return 403 when quantity surpasses limit', async () => {
-            const body = {
-                quantity: fakeCreatedItem.quantity + 1, // max quantity + 1
-                cartId: cartItem.id
-            }
-
-            const result = await supertest(app)
-                .put('/cart')
-                .send(body)
-
-            expect(result.status).toEqual(403)
-        });
-
-        test('should return 200 when quantity updated', async () => {
-            const body = {
-                quantity: fakeCreatedItem.quantity - 1,
-                cartId: cartItem.id
-            }
-
-            const result = await supertest(app)
-                .put('/cart')
-                .send(body)
-
-            expect(result.status).toEqual(200)
-        });
-    });
-
     describe('route POST /cart', () => {
         test('should returns 400 when invalid body', async () => {
             const result = await supertest(app)
@@ -259,6 +207,193 @@ describe('ENTITY CART', () => {
 
             expect(result.status).toEqual(200);
             expect(result.body).toEqual(expect.objectContaining(expectedObj))
+        });
+    });
+
+    describe('route PUT /cart', () => {
+        test('should return 400 when invalid body is sent', async () => {
+            const body = {
+                clientType: "user",
+                token: "INVALIDTOKEN",
+                itemId: 3,
+                quantity: 2
+            }
+
+            const result = await supertest(app)
+                .put('/cart')
+                .send(body)
+
+            expect(result.status).toEqual(400)
+        });
+
+        test('should return 401 when clientType is neither User or Visitor', async () => {
+            const body = {
+                clientType: "INVALID",
+                token: validVisitorToken,
+                itemId: 3,
+                quantity: 2
+            }
+
+            const result = await supertest(app)
+                .put('/cart')
+                .send(body)
+
+            expect(result.status).toEqual(401)
+        });
+
+        test('should return 401 when ItemId is not in Database', async () => {
+            const body = {
+                clientType: "visitor",
+                token: validVisitorToken,
+                itemId: 1,
+                quantity: 2
+            }
+
+            const result = await supertest(app)
+                .put('/cart')
+                .send(body)
+
+            expect(result.status).toEqual(401)
+        });
+
+        test('should return 401 when updated Quantity is higher than available quantity', async () => {
+            const body = {
+                clientType: "visitor",
+                token: validVisitorToken,
+                itemId: fakeCreatedItem.id,
+                quantity: fakeCreatedItem.quantity + 1,
+            }
+
+            const result = await supertest(app)
+                .put('/cart')
+                .send(body)
+
+            expect(result.status).toEqual(401)
+        });
+
+        test('should return 404 when item is not found in users cart', async () => {
+            const body = {
+                clientType: "visitor",
+                token: validVisitorToken,
+                itemId: fakeCreatedItem2.id,
+                quantity: fakeCreatedItem2.quantity,
+            }
+
+            const result = await supertest(app)
+                .put('/cart')
+                .send(body)
+
+            expect(result.status).toEqual(404)
+        });
+
+        test('should return 200 and updated Item when item is updated properly', async () => {
+            const body = {
+                clientType: "visitor",
+                token: validVisitorToken,
+                itemId: fakeCreatedItem.id,
+                quantity: fakeCreatedItem.quantity,
+            }
+
+            const expectedBody = {
+                id: expect.anything(),
+                user_id: null,
+                item_id: fakeCreatedItem.id,
+                quantity: fakeCreatedItem.quantity,
+                visitor_id: visitor.id
+            }
+
+            const result = await supertest(app)
+                .put('/cart')
+                .send(body)
+
+            
+            expect(result.status).toEqual(200);
+            expect(result.body).toEqual(expect.objectContaining(expectedBody));
+        });
+    });
+
+    describe('route DELETE /cart/item', () => {
+        test('should return 400 when invalid body is sent', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/item/InvalidclientType&${validVisitorToken}&${fakeCreatedItem.id}`)
+
+            expect(result.status).toEqual(400)
+        });
+
+        test('should return 401 when clientType is neither User or Visitor', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/item/client&${validVisitorToken}&${fakeCreatedItem.id}`)
+
+            expect(result.status).toEqual(401)
+        });
+
+        test('should return 404 when asked Item is not in users cart', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/item/visitor&${validVisitorToken}&${fakeCreatedItem2.id}`)
+
+            expect(result.status).toEqual(404)
+        });
+
+        test('should return 404 when asked user does not have a cart', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/item/visitor&${invalidVisitorToken}&${fakeCreatedItem.id}`)
+
+            expect(result.status).toEqual(404)
+        });
+
+        test('should return 200 and deleted Item when item is deleted properly', async () => {
+
+            const expectedBody = {
+                id: expect.anything(),
+                user_id: null,
+                item_id: fakeCreatedItem.id,
+                quantity: 1, //Value added to the cart
+                visitor_id: visitor.id
+            }
+
+            const result = await supertest(app)
+                .delete(`/cart/item/visitor&${validVisitorToken}&${fakeCreatedItem.id}`)
+            
+            expect(result.status).toEqual(200);
+            expect(result.body).toEqual(expect.objectContaining(expectedBody));
+        });
+    });
+
+    describe('route DELETE /cart/all', () => {
+        test('should return 400 when invalid body is sent', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/all/InvalidclientType&${validVisitorToken}`)
+
+            expect(result.status).toEqual(400)
+        });
+
+        test('should return 401 when clientType is neither User or Visitor', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/all/client&${validVisitorToken}`)
+
+            expect(result.status).toEqual(401)
+        });
+
+        test('should return 404 when asked user does not have a cart', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/all/visitor&${invalidVisitorToken}`)
+
+            expect(result.status).toEqual(404)
+        });
+
+        test('should return 200 and deleted Item when item is deleted properly', async () => {
+
+            const result = await supertest(app)
+                .delete(`/cart/all/visitor&${validVisitorToken}`)
+            
+            expect(result.status).toEqual(200);
         });
     });
 });
