@@ -12,6 +12,17 @@ async function getPurchaseHistory(req, res) {
     }
 }
 
+async function getHistoryByPurchaseToken(req, res) {
+    try {
+        const history = await db.purchaseHistory.getByPurchaseToken(res.locals.token);
+        return res.send(history)
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+}
+
 export {
     getPurchaseHistory,
+    getHistoryByPurchaseToken,
 }
