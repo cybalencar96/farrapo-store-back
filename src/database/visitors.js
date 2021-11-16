@@ -10,9 +10,15 @@ async function get(visitorToken) {
     return result.rows[0];
 }
 
+async function remove(visitorToken) {
+    await connection.query(`DELETE FROM visitors WHERE token = $1;`,[visitorToken]);
+}
+
+
 const visitorsFactory = {
     add,
     get,
+    remove,
 }
 
 export default visitorsFactory;

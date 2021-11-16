@@ -33,10 +33,14 @@ const getAuthorizationSchema = joi.object ({
     authorization: joi.string().min(43).max(43).required(),
 }).unknown();
 
+const registerVisitorSchema = joi.object({
+    visitorToken: joi.string().min(36).max(36).required() 
+})
 
 
 export {
     signUpSchema,
     signInSchema,
     getAuthorizationSchema,
+    registerVisitorSchema,
 }

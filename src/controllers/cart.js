@@ -20,6 +20,9 @@ async function addToCart(req, res) {
         }
 
         if (visitorToken) {
+            const visitor = await db.visitors.get(visitorToken);
+            if (!visitor) return res.status(400).send('visitorToken invalid');
+
             const itemInCart = await db.cart.get({ itemId, visitorToken });
             if (itemInCart) return res.status(409).send('item already in cart');
         }
@@ -83,7 +86,7 @@ async function getUserCart(req, res) {
         let visitor = {};
         if (visitorToken) {
             visitor = await db.visitors.get(visitorToken);
-            if (!visitor) return res.status(400).send('token invalid');
+            if (!visitor) return res.status(400).send('visitorToken invalid');
         }
 
         if (userId) {
@@ -144,10 +147,29 @@ async function deleteClientCart(req, res) {
     }
 }
 
+async function transferCartVisitantToUser(req, res) {
+    const {userId, visitorToken} = req.body;
+
+    try {
+        const visitor = await db.visitors.get(visitorToken);
+        if (!visitor) {
+            return res.status(400).send('invalid visitorId');
+        }
+
+        await db.cart.transferItems({ userId, visitorId: visitor.id });
+        await db.visitors.remove(visitorToken);
+        res.send();
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
 export {
     addToCart,
     updateQty,
     getUserCart,
     removeItemFromCart,
     deleteClientCart,
+    transferCartVisitantToUser
 }

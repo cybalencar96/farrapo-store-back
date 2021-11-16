@@ -30,10 +30,16 @@ const deleteItemFromClientCartSchema = joi.object({
     itemId: joi.number().positive().required(),
 });
 
+const putCartTransferSchema = joi.object({
+    userId: joi.number().positive().required(),
+    visitorToken: joi.string().min(36).max(36).required(), 
+});
+
 export {
     postCartSchema,
     putCartQtySchema,
     getClientCartSchema,
     deleteClientCartSchema,
     deleteItemFromClientCartSchema,
+    putCartTransferSchema,
 }
