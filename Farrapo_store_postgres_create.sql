@@ -154,5 +154,8 @@ ALTER TABLE "cart" ADD CONSTRAINT "cart_fk2" FOREIGN KEY ("visitor_id") REFERENC
 ALTER TABLE "cart" ADD CONSTRAINT "cart_ch0" CHECK ("user_id" <> NULL OR "visitor_id" <> NULL);
 ALTER TABLE "cart" ADD CONSTRAINT "cart_ch1" CHECK ("user_id" = NULL OR "visitor_id" = NULL);
 
+ALTER TABLE purchase_history ADD COLUMN token VARCHAR(36);
+
+
 ALTER TABLE "purchase_history" ADD CONSTRAINT "purchase_history_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
 ALTER TABLE "purchase_history" ADD CONSTRAINT "purchase_history_fk1" FOREIGN KEY ("item_id") REFERENCES "itens"("id");
