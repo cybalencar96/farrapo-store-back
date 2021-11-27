@@ -1,7 +1,5 @@
-import makeDbFactory from "../database/database.js";
 import { makeServices } from "../services/services.js";
 
-const db = makeDbFactory();
 const services = makeServices();
 
 async function addToCart(req, res) {
@@ -138,5 +136,5 @@ export {
     getUserCart,
     removeItemFromCart,
     deleteClientCart,
-    transferCartVisitantToUser
+    transferCartVisitantToUser,
 }

@@ -1,4 +1,4 @@
-function makeCartService(db) {
+function makeCartService(db, errorMessage, successMessage) {
     async function addItem(cartInfos = {}) {
         const {
             userId,
@@ -129,23 +129,6 @@ function makeCartService(db) {
         removeItemFromCart,
         deleteUserCart,
         transferCartVisitantToUser,
-    }
-}
-
-function errorMessage({ text }) {
-    return {
-        error: {
-            text: text,
-
-        },
-        item: null,
-    }
-}
-
-function successMessage({ body }) {
-    return {
-        error: null,
-        body: body || true,
     }
 }
 
