@@ -46,7 +46,7 @@ function makeCartService(db) {
         if (visitorToken) addedItem = await db.cart.addItem({ itemId, quantity, visitorId: visitor.id });
         
 
-        return successMessage({item: addedItem});
+        return successMessage({body: addedItem});
     }
 
     async function updateItemQty({ clientType, token, itemId, quantity }) {
@@ -71,12 +71,29 @@ function makeCartService(db) {
         }
 
         const updatedItem = await db.cart.updateItemQty({ clientType, token, itemId, quantity });
-        return successMessage({ item: updatedItem });
+        return successMessage({ body: updatedItem });
+    }
+
+    async function getUserCart({userId, visitorToken}) {
+        let visitor = {};
+        if (visitorToken) {
+            visitor = await db.visitors.get(visitorToken);
+            if (!visitor) return errorMessage({ text: 'visitorToken invalid' });
+        }
+
+        if (userId) {
+            const user = await db.users.get('byId', userId);
+            if (!user) return errorMessage({ text: 'user invalid' });
+        }
+
+        const userCart = await db.cart.getCartFromUser({userId, visitorId: visitor.id});
+        return successMessage({ body: userCart });
     }
 
     return {
         addItem,
         updateItemQty,
+        getUserCart,
     }
 }
 
@@ -90,13 +107,13 @@ function errorMessage({ text }) {
     }
 }
 
-function successMessage({ item }) {
+function successMessage({ body }) {
     return {
         error: null,
-        item,
+        body,
     }
 }
 
 export {
-    makeCartService
+    makeCartService,
 }

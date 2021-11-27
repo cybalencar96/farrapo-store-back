@@ -17,10 +17,10 @@ async function addToCart(req, res) {
             return res.status(400).send('send one id');
         }
 
-        const { item, error } = await services.cart.addItem({itemId, userId, visitorToken, quantity})
+        const { body, error } = await services.cart.addItem({itemId, userId, visitorToken, quantity})
         if (error) return res.status(400).send(error.text); 
 
-        return res.send(item);
+        return res.send(body);
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
@@ -35,13 +35,13 @@ async function updateQty(req, res) {
     }
 
     try {
-        const {error, item} = await services.cart.updateItemQty({ clientType, token, itemId, quantity })
+        const {error, body} = await services.cart.updateItemQty({ clientType, token, itemId, quantity })
 
         if (error) {
             return res.status(400).send(error.text);
         }
 
-        return res.send(item);
+        return res.send(body);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -56,19 +56,10 @@ async function getUserCart(req, res) {
             return res.status(400).send('send one id');
         }
 
-        let visitor = {};
-        if (visitorToken) {
-            visitor = await db.visitors.get(visitorToken);
-            if (!visitor) return res.status(400).send('visitorToken invalid');
-        }
-
-        if (userId) {
-            const user = await db.users.get('byId', userId);
-            if (!user) return res.status(400).send('user invalid');
-        }
-
-        const userCart = await db.cart.getCartFromUser({userId, visitorId: visitor.id});
-        return res.send(userCart)
+        const { body, error } = await services.cart.getUserCart({userId, visitorToken});
+        if (error) return res.status(400).send(error.text);
+        console.log(body)
+        return res.send(body)
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
