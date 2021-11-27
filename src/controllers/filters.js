@@ -1,15 +1,14 @@
-import makeDbFactory from '../database/database.js';
+import { makeServices } from '../services/services.js';
 
-const db = makeDbFactory();
+const services = makeServices();
 
 async function getFilters(req, res) {
     try {
-        const result = await db.getAllFilters()
-        return res.send({
-            categories: result[0],
-            colors: result[1],
-            sizes: result[2]
-        });
+        const {body, error} = await services.filters.getFilters();
+
+        if (error) return res.status(400).send(error.text);
+
+        return res.send(body);
     } catch (error) {
         console.log(error);
         res.sendStatus(500)
