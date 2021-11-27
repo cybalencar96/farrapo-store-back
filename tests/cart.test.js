@@ -50,7 +50,7 @@ describe('ENTITY CART', () => {
 
         cartItem = await db.cart.addItem({
             itemId: fakeCreatedItem.id,
-            visitorToken: validVisitorToken,
+            visitorId: visitor.id,
             quantity: 1,
         });
     });
@@ -165,7 +165,7 @@ describe('ENTITY CART', () => {
             expect(result.text).toEqual('send one id');
         });
 
-        test('should returns 409 item is already in cart', async () => {
+        test('should returns 400 when item is already in cart', async () => {
             const body = {
                 itemId: fakeCreatedItem.id,
                 visitorToken: validVisitorToken,
@@ -176,7 +176,8 @@ describe('ENTITY CART', () => {
                 .post('/cart')
                 .send(body);
             
-            expect(result.status).toEqual(409);
+            expect(result.status).toEqual(400);
+            expect(result.text).toEqual('item already in cart');
         });
 
         test('should return 200 when item inserted in cart', async () => {

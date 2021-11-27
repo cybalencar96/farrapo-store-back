@@ -1,49 +1,26 @@
 import makeDbFactory from "../database/database.js";
+import { makeServices } from "../services/services.js";
 
 const db = makeDbFactory();
+const services = makeServices();
 
 async function addToCart(req, res) {
     const {
         itemId,
         userId,
         visitorToken,
-    } = req.body
+        quantity
+    } = req.body;
 
     try {
         if ((!userId && !visitorToken) || (userId && visitorToken)) {
             return res.status(400).send('send one id');
         }
 
-        if (userId) {
-            const itemInCart = await db.cart.get({ itemId, userId });
-            if (itemInCart) return res.status(409).send('item already in cart');
-        }
+        const { item, error } = await services.cart.addItem({itemId, userId, visitorToken, quantity})
+        if (error) return res.status(400).send(error.text); 
 
-        if (visitorToken) {
-            const visitor = await db.visitors.get(visitorToken);
-            if (!visitor) return res.status(400).send('visitorToken invalid');
-
-            const itemInCart = await db.cart.get({ itemId, visitorToken });
-            if (itemInCart) return res.status(409).send('item already in cart');
-        }
-
-        const item = await db.items.get({ id: itemId })
-        if (!item) {
-            return res.status(404).send('item not found');
-        }
-
-        const user = await db.users.get('byId', userId)
-        if (userId && !user) {
-            return res.status(404).send('user not found');
-        }
-
-        const itemInCart = await db.cart.getItemQtyInCart(itemId);
-        if (itemInCart && itemInCart.qtyInCart >= itemInCart.maxQty) {
-            return res.status(403).send('max dynamic quantity reached');
-        }
-
-        const addedItem = await db.cart.addItem(req.body)
-        return res.send(addedItem);
+        return res.send(item);
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
