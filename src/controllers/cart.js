@@ -102,7 +102,7 @@ async function deleteClientCart(req, res) {
     }
 
     try {
-        const { body, error } = await services.cart.deleteUserCart({ clientType, token });
+        const { error } = await services.cart.deleteUserCart({ clientType, token });
 
         if (error) {
             return res.sendStatus(400);
@@ -119,13 +119,12 @@ async function transferCartVisitantToUser(req, res) {
     const {userId, visitorToken} = req.body;
 
     try {
-        const visitor = await db.visitors.get(visitorToken);
-        if (!visitor) {
+        const { error } = await services.cart.transferCartVisitantToUser({ userId, visitorToken });
+
+        if (error) {
             return res.status(400).send('invalid visitorId');
         }
 
-        await db.cart.transferItems({ userId, visitorId: visitor.id });
-        await db.visitors.remove(visitorToken);
         res.send();
     } catch (error) {
         console.log(error);

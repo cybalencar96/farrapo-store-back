@@ -110,12 +110,25 @@ function makeCartService(db) {
         return successMessage({ body: deletedCart })
     }
 
+    async function transferCartVisitantToUser({ userId, visitorToken }) {
+        const visitor = await db.visitors.get(visitorToken);
+        if (!visitor) {
+            return errorMessage({ text: 'invalid visitorId' });
+        }
+
+        await db.cart.transferItems({ userId, visitorId: visitor.id });
+        await db.visitors.remove(visitorToken);
+
+        return successMessage();
+    }
+
     return {
         addItem,
         updateItemQty,
         getUserCart,
         removeItemFromCart,
         deleteUserCart,
+        transferCartVisitantToUser,
     }
 }
 
@@ -132,7 +145,7 @@ function errorMessage({ text }) {
 function successMessage({ body }) {
     return {
         error: null,
-        body,
+        body: body || true,
     }
 }
 
