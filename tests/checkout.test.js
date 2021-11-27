@@ -107,7 +107,7 @@ describe('CheckOut ENTITY', () => {
             expect(result.status).toEqual(401);
         });
 
-        test('should return 401 if invalid token is sent', async () => {
+        test('should return 400 if invalid token is sent', async () => {
             const validBody = {
                 cart: [cartItem],
                 userData: validUserData
@@ -117,7 +117,7 @@ describe('CheckOut ENTITY', () => {
                 .post('/checkout').send(validBody)
                 .set('Authorization', `Bearer ${getFakeUuid()}`);
 
-            expect(result.status).toEqual(401);
+            expect(result.status).toEqual(400);
         });
 
         test('should return 400 if cart length does not match cart in database', async () => {

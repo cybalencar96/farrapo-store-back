@@ -5,8 +5,16 @@ function makeItemsService(db, errorMessage, successMessage) {
         return successMessage({body: items});
     }
 
+    async function getItem({ id }) {
+        const item = await db.items.get({ id });
+        if (!item) return errorMessage({ text: 'item not fount' });
+
+        return successMessage({ body: item });
+    }
+
     return {
         getItems,
+        getItem,
     }
 }
 

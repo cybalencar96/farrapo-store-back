@@ -14,7 +14,7 @@ async function transferFromCartToHistory(req, res) {
             return res.status(400).send(error.text);
         }
 
-        res.status(200).send({ body });
+        res.status(200).send({ token: body });
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

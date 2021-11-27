@@ -1,5 +1,5 @@
 function makeCheckoutService(db, errorMessage, successMessage) {
-    async function transferFromCartToHistory({ cart, token }) {
+    async function checkout({ cart, token }) {
         const userId = (await db.users.get("session", token))?.user_id;
 
         if (!userId) {
@@ -21,15 +21,13 @@ function makeCheckoutService(db, errorMessage, successMessage) {
         }
 
         const purchaseToken = await db.purchaseHistory.addSeveral(userId, cart);
-        await db.cart.deleteUserCart({clientType: "user", token: res.locals.token});
+        await db.cart.deleteUserCart({clientType: "user", token: token});
         await db.items.updateQuantity(cart);
 
         return successMessage({body: purchaseToken});
     }
 
-    return {
-        transferFromCartToHistory,
-    }
+    return checkout
 }
 
 function areItemObjectsEqual(receivedItem, savedItem) {
