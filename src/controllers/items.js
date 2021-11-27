@@ -1,7 +1,9 @@
 import makeDbFactory from '../database/database.js';
 import { areDuplicatesInArray, randomIntFromInterval} from '../utils/sharedFunctions.js';
+import { makeItemsService } from '../services/items.js';
 
 const db = makeDbFactory();
+const services = makeItemsService();
 
 async function getItems(req, res) {
     try {
@@ -9,10 +11,10 @@ async function getItems(req, res) {
             colors: req.query.color ? [req.query.color] : '',
             categories: req.query.category ? [req.query.category] : '',
         }
-        const items = await db.items.get({...adjustedQuery, limit: 20});
 
-        const structuredItems = items;
-        return res.send(structuredItems);
+        const { body } = await services.items.getItems({...adjustedQuery, limit: 20});
+
+        return res.send(body);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
