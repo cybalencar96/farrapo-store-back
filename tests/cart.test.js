@@ -121,6 +121,7 @@ describe('ENTITY CART', () => {
                 userId: null,
                 userName: null
             }
+
             expect(result.status).toEqual(200);
             expect(result.body.length).toEqual(1);
             expect(result.body[0]).toEqual(expect.objectContaining(expectedObj));
@@ -320,7 +321,7 @@ describe('ENTITY CART', () => {
             const result = await supertest(app)
                 .delete(`/cart/item/visitor&${validVisitorToken}&${fakeCreatedItem2.id}`)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 404 when asked user does not have a cart', async () => {
@@ -328,7 +329,7 @@ describe('ENTITY CART', () => {
             const result = await supertest(app)
                 .delete(`/cart/item/visitor&${invalidVisitorToken}&${fakeCreatedItem.id}`)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 200 and deleted Item when item is deleted properly', async () => {
@@ -371,7 +372,7 @@ describe('ENTITY CART', () => {
             const result = await supertest(app)
                 .delete(`/cart/all/visitor&${invalidVisitorToken}`)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 200 and deleted Item when item is deleted properly', async () => {

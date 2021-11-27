@@ -58,7 +58,7 @@ async function getUserCart(req, res) {
 
         const { body, error } = await services.cart.getUserCart({userId, visitorToken});
         if (error) return res.status(400).send(error.text);
-        console.log(body)
+        
         return res.send(body)
     } catch (error) {
         console.log(error);
@@ -70,7 +70,7 @@ async function removeItemFromCart(req, res) {
     const {
         clientType,
         token,
-        itemId
+        itemId,
     } = req.params;
 
     if (clientType !== "user" && clientType !== "visitor") {
@@ -78,11 +78,13 @@ async function removeItemFromCart(req, res) {
     }
 
     try {
-        const deletedItem = await db.cart.deleteItemFromUserCart({clientType, token, itemId});
-        if (!deletedItem) {
-            return res.sendStatus(404);
+        const { body, error } = await services.cart.removeItemFromCart({clientType, token, itemId});
+        
+        if (error) {
+            return res.status(400).send(error.text);
         }
-        return res.send(deletedItem);
+
+        return res.send(body);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -100,10 +102,12 @@ async function deleteClientCart(req, res) {
     }
 
     try {
-        const deletedCart = await db.cart.deleteUserCart({ clientType, token });
-        if (!deletedCart) {
-            return res.sendStatus(404);
+        const { body, error } = await services.cart.deleteUserCart({ clientType, token });
+
+        if (error) {
+            return res.sendStatus(400);
         }
+
         return res.sendStatus(200);
     } catch (error) {
         console.log(error);

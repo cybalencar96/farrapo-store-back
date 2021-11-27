@@ -90,10 +90,32 @@ function makeCartService(db) {
         return successMessage({ body: userCart });
     }
 
+    async function removeItemFromCart({clientType, token, itemId}) {
+        const deletedItem = await db.cart.deleteItemFromUserCart({clientType, token, itemId});
+        
+        if (!deletedItem) {
+            return errorMessage({text: 'item not deleted'});
+        }
+
+        return successMessage({body: deletedItem});
+    }
+
+    async function deleteUserCart({ clientType, token }) {
+        const deletedCart = await db.cart.deleteUserCart({ clientType, token });
+        
+        if (!deletedCart) {
+            return errorMessage({text: 'cart not deleted'});
+        }
+
+        return successMessage({ body: deletedCart })
+    }
+
     return {
         addItem,
         updateItemQty,
         getUserCart,
+        removeItemFromCart,
+        deleteUserCart,
     }
 }
 
