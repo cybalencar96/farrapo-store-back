@@ -165,7 +165,7 @@ describe('ITEMS ENTITY', () => {
 
 
             expect(result.status).toEqual(400);
-            expect(result.text).toEqual('item not fount')
+            expect(result.text).toEqual('item not found')
         });
 
         test('should return 200 when id exists', async () => {
