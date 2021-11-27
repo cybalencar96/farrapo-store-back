@@ -242,22 +242,7 @@ describe('ENTITY CART', () => {
             expect(result.status).toEqual(401)
         });
 
-        test('should return 401 when ItemId is not in Database', async () => {
-            const body = {
-                clientType: "visitor",
-                token: validVisitorToken,
-                itemId: 1,
-                quantity: 2
-            }
-
-            const result = await supertest(app)
-                .put('/cart')
-                .send(body)
-
-            expect(result.status).toEqual(401)
-        });
-
-        test('should return 401 when updated Quantity is higher than available quantity', async () => {
+        test('should return 400 when updated Quantity is higher than available quantity', async () => {
             const body = {
                 clientType: "visitor",
                 token: validVisitorToken,
@@ -269,10 +254,11 @@ describe('ENTITY CART', () => {
                 .put('/cart')
                 .send(body)
 
-            expect(result.status).toEqual(401)
+            expect(result.status).toEqual(400)
+            expect(result.text).toEqual('item not found or quantity limit surpassed')
         });
 
-        test('should return 404 when item is not found in users cart', async () => {
+        test('should return 400 when item is not found in users cart', async () => {
             const body = {
                 clientType: "visitor",
                 token: validVisitorToken,
@@ -284,7 +270,7 @@ describe('ENTITY CART', () => {
                 .put('/cart')
                 .send(body)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 200 and updated Item when item is updated properly', async () => {
@@ -307,7 +293,6 @@ describe('ENTITY CART', () => {
                 .put('/cart')
                 .send(body)
 
-            
             expect(result.status).toEqual(200);
             expect(result.body).toEqual(expect.objectContaining(expectedBody));
         });

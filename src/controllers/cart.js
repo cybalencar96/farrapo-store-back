@@ -30,22 +30,18 @@ async function addToCart(req, res) {
 async function updateQty(req, res) {
     const { clientType, token, itemId, quantity } = req.body
 
-
     if ((clientType !== "user" && clientType !== "visitor") || quantity <= 0 ) {
         return res.sendStatus(401);
     }
 
     try {
-        const requiredItem = await db.items.get({ id: itemId })
-        if (!requiredItem || quantity > requiredItem.quantity) {
-            return res.sendStatus(401);
+        const {error, item} = await services.cart.updateItemQty({ clientType, token, itemId, quantity })
+
+        if (error) {
+            return res.status(400).send(error.text);
         }
 
-        const updatedItem = await db.cart.updateItemQty({ clientType, token, itemId, quantity });
-        if (!updatedItem) {
-            return res.sendStatus(404);
-        }
-        return res.send(updatedItem);
+        return res.send(item);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

@@ -19,7 +19,7 @@ function makeCartService(db) {
                 return errorMessage({ text: 'Visitor invalid' })
             }
 
-            const itemInCart = await db.cart.get({ itemId, visitorToken }); // quando refatorar cart get, alterar para visitorId: visitor.id
+            const itemInCart = await db.cart.get({ itemId, visitorId: visitor.id });
 
             if (itemInCart) return errorMessage({ text: 'item already in cart' });
         }
@@ -49,8 +49,34 @@ function makeCartService(db) {
         return successMessage({item: addedItem});
     }
 
+    async function updateItemQty({ clientType, token, itemId, quantity }) {
+        let requiredItem;
+        const item = await db.items.get({id: itemId});
+        if (!item) return errorMessage({text: 'item not found or quantity limit surpassed'});
+
+        if (clientType === 'visitor') {
+            const visitor = await db.visitors.get(token);
+            requiredItem = await db.cart.get({ itemId, visitorId: visitor.id });
+        }
+
+        if (clientType === 'user') {
+            const user = await db.users.get('session', token);
+            requiredItem = await db.cart.get({ itemId, userId: user.user_id });
+        }
+
+        
+        if (!requiredItem || quantity > item.quantity) {
+
+            return errorMessage({text: 'item not found or quantity limit surpassed'});
+        }
+
+        const updatedItem = await db.cart.updateItemQty({ clientType, token, itemId, quantity });
+        return successMessage({ item: updatedItem });
+    }
+
     return {
         addItem,
+        updateItemQty,
     }
 }
 

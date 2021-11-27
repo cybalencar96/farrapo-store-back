@@ -6,7 +6,7 @@ async function get(cartInfos = {}) {
         id,
         userId,
         itemId,
-        visitorToken,
+        visitorId,
     } = cartInfos;
 
     let query = 'SELECT * FROM cart WHERE 1=1 ';
@@ -21,12 +21,9 @@ async function get(cartInfos = {}) {
         return (await connection.query(query,[userId, itemId])).rows[0];
     }
     
-    if (visitorToken) {
-        const visitor = await visitorsFactory.get(visitorToken);
-
+    if (visitorId) {
         query += 'AND item_id = $1 AND visitor_id = $2';
-
-        const cartItem = await connection.query(query, [itemId, visitor?.id]);
+        const cartItem = await connection.query(query, [itemId, visitorId]);
 
         return cartItem.rows[0];
     }
