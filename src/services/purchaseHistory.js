@@ -6,13 +6,9 @@ function makePurchaseHistoryService(db, errorMessage, successMessage) {
     }
 
     async function getByPurchaseToken({ purchaseToken }) {
-        try {
-            const history = await db.purchaseHistory.getByPurchaseToken(purchaseToken);
-            return successMessage({ body: history });
-        } catch (error) {
-            console.log(error);
-            return res.sendStatus(500);
-        }
+        const history = await db.purchaseHistory.getByPurchaseToken(purchaseToken);
+        
+        return successMessage({ body: history });
     }
     
     return {

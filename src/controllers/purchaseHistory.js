@@ -1,7 +1,5 @@
-import makeDbFactory from "../database/database.js";
 import { makeServices } from "../services/services.js";
 
-const db = makeDbFactory();
 const services = makeServices();
 
 async function getPurchaseHistory(req, res) {
