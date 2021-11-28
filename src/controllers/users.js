@@ -56,15 +56,16 @@ async function getUserAuthenticated(req, res) {
     const token = res.locals.token
 
     try {
-        const user = await db.users.get('session', token);
-        if (!user) {
-            return res.status(401).send('user not authenticated, try log in again');
-        }
+        const { body, error } = await services.users.getUserAuthenticated({ token });
 
+        if (error) {
+            return res.status(401).send(error.text);
+        }
+        
         return res.send({
-            id: user.user_id,
-            name: user.name,
-            email: user.email,
+            id: body.user_id,
+            name: body.name,
+            email: body.email,
             token,
         });
     } catch (error) {

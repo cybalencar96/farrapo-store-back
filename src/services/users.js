@@ -45,9 +45,21 @@ function makeUsersService(db, errorMessage, successMessage) {
         return successMessage({ body: token });
     }
 
+    async function getUserAuthenticated({ token }) {
+        const user = await db.users.get('session', token);
+
+        if (!user) {
+            return errorMessage({ text: 'user not authenticated, try log in again' });
+        }
+
+        return successMessage({ body: user });
+    }
+
+
     return {
         signUp,
         signIn,
+        getUserAuthenticated,
     }
 }
 
