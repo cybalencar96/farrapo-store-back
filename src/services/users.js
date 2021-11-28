@@ -55,11 +55,25 @@ function makeUsersService(db, errorMessage, successMessage) {
         return successMessage({ body: user });
     }
 
+    async function logOut({ token }) {
+        const user = await db.users.get('session', token);
+
+        if (!user) {
+            return errorMessage({ text: 'user not logged in' });
+        }
+
+        await db.cart.deleteUserCart({ clientType: "user", token});
+        await db.users.removeSessions('byToken', token);
+
+        return successMessage();
+    }
+
 
     return {
         signUp,
         signIn,
         getUserAuthenticated,
+        logOut,
     }
 }
 

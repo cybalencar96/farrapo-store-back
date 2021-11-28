@@ -78,13 +78,7 @@ async function logOut(req, res) {
     const token = res.locals.token
 
     try {
-        const user = await db.users.get('session', token);
-        if (!user) {
-            return res.sendStatus(304);
-        }
-
-        await db.cart.deleteUserCart({ clientType: "user", token});
-        await db.users.removeSessions('byToken', token);
+        await services.users.logOut({ token });
         
         return res.sendStatus(200);
     } catch (error) {
