@@ -86,29 +86,13 @@ npm i
 REACT_APP_SERVER_URL=http://localhost:4000
 ```
 
-6. Create a .env.dev file in backend root folder with following variables 
+6. Create a .env.dev file in backend root folder with following variable
 ```sh
-DB_USER
-DB_HOST
-DB_PASS
-DB_PORT
-DB_NAME
+DATABASE_URL=postgres://dahjxwlhwetibg:a3d0c849a074716c3575197579de96a0cc25e256044ee255b535ed50cf499fb1@ec2-34-232-144-162.compute-1.amazonaws.com:5432/d6rvvg3h234b42
 ```
 
-7. Create a postgres database and fill .env.dev with database credentials
-```sh
-DB_USER=postgres
-DB_HOST=localhost
-DB_PASS=123456
-DB_PORT=5432
-DB_NAME=farrapo-store
-```
-
-   <br />
-
-8. Run (copy & paste) the farrapo_dump.sql statements in database
-   <br />
-   <br />
+<br />
+<br />
 
 ### **How to run**
 
