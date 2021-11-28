@@ -5,6 +5,7 @@ import { makeFiltersService } from './filters.js';
 import { makeItemsService } from './items.js';
 import { makePurchaseHistoryService } from './purchaseHistory.js';
 import { makeSearchService } from './search.js';
+import { makeUsersService } from './users.js';
 
 const db = makeDbFactory();
 
@@ -16,6 +17,7 @@ function makeServices() {
     const items = makeItemsService(db, errorMessage, successMessage);
     const purchaseHistory = makePurchaseHistoryService(db, errorMessage, successMessage);
     const search = makeSearchService(db, errorMessage, successMessage);
+    const users = makeUsersService(db, errorMessage, successMessage);
 
     return {
         cart,
@@ -24,6 +26,7 @@ function makeServices() {
         items,
         purchaseHistory,
         search,
+        users,
     }
 }
 

@@ -1,42 +1,29 @@
 import bcrypt from 'bcrypt';
 import makeDbFactory from '../database/database.js';
+import { makeServices } from '../services/services.js';
 
 const db = makeDbFactory();
+const services = makeServices();
 
 async function signUp(req, res) {
-    const {
-        email,
-        genderName,
-    } = req.body;
-
     try {
-        const user = await db.users.get('byEmail', email);
-        if (user) {
-            return res.status(409).send('email already exists');
+        const { body, error } = await services.users.signUp({ ...req.body })
+
+        if (error) {
+            return res.status(400).send(error.text);
         }
-
-        const gender = await db.genders.get(genderName);
-        if (!gender) {
-            return res.status(400).send('invalid genderName')
-        }
-
-
-        const addedUser = await db.users.add({
-            ...req.body,
-            genderId: gender.id,
-        });
 
         const structuredUser = {
-            id: addedUser.id,
-            name: addedUser.name,
-            email: addedUser.email,
-            zipCode: addedUser.zip_code,
-            streetNumber: addedUser.street_number,
-            complement: addedUser.complement,
-            phone: addedUser.phone,
-            genderName: addedUser.gender_name,
-            birthDate: addedUser.birth_date,
-            imageUrl: addedUser.image_url,
+            id: body.id,
+            name: body.name,
+            email: body.email,
+            zipCode: body.zip_code,
+            streetNumber: body.street_number,
+            complement: body.complement,
+            phone: body.phone,
+            genderName: body.gender_name,
+            birthDate: body.birth_date,
+            imageUrl: body.image_url,
         }
 
         return res.send(structuredUser);
@@ -47,16 +34,17 @@ async function signUp(req, res) {
 }
 
 async function signIn(req, res) {
-    const user = res.locals.user
+    const user = res.locals.user;
+
     try {
-        const token = await db.users.createSession(user.id);
+        const { body } = await services.users.signIn({ user });
 
         return res.send({
             id: user.id,
             name: user.name,
             email: user.email,
             image: user.image_url,
-            token,
+            token: body,
         });
     } catch (error) {
         console.log(error);

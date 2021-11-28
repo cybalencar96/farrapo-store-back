@@ -42,12 +42,12 @@ describe('USERS ENTITY', () => {
             expect(result.status).toEqual(400);
         });
 
-        test('should return 409 when email exists', async () => {
+        test('should return 400 when email exists', async () => {
             const result = await supertest(app)
                 .post('/signup')
                 .send(fakeUser2);
 
-            expect(result.status).toEqual(409);
+            expect(result.status).toEqual(400);
         });
 
         test('should return 200 when user inserted', async () => {
