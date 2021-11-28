@@ -85,7 +85,7 @@ describe('ITEMS ENTITY', () => {
             const result = await supertest(app)
                 .post('/items').send(bodyWithInvalidColor);
 
-            expect(result.status).toEqual(404);
+            expect(result.status).toEqual(400);
         });
 
         test('should return 404 if body.sizeName is not in Database', async () => {
@@ -93,7 +93,7 @@ describe('ITEMS ENTITY', () => {
             const result = await supertest(app)
                 .post('/items').send(bodyWithInvalidSize);
 
-            expect(result.status).toEqual(404);
+            expect(result.status).toEqual(400);
         });
 
         test('should return 404 if body.categories includes any category that is not in Database', async () => {
@@ -101,7 +101,7 @@ describe('ITEMS ENTITY', () => {
             const result = await supertest(app)
                 .post('/items').send(bodyWithInvalidCategory);
 
-            expect(result.status).toEqual(404);
+            expect(result.status).toEqual(400);
         });
 
         test('should return 201 if body is valid', async () => {

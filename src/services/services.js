@@ -32,7 +32,11 @@ function errorMessage({ text }) {
     }
 }
 
-function successMessage({ body }) {
+function successMessage(infos = {}) {
+    const {
+        body,
+    } = infos;
+
     return {
         error: null,
         body: body || true,
