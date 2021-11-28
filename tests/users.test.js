@@ -4,7 +4,7 @@ import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
 import generatePassword from '../src/utils/generatePassword.js';
-import { getFakeUser, getInvalidFakeUser, getFakeUuid } from '../src/factories/userFactory.js';
+import { getFakeUser, getInvalidFakeUser, getFakeUuid } from './factories/userFactory.js';
 
 const db = makeDbFactory();
 

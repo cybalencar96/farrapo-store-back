@@ -4,11 +4,11 @@ import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
 import { randomIntFromInterval } from '../src/utils/sharedFunctions.js';
-import { getValidInsertionItemsBody } from '../src/factories/itemsFactory.js';
-import { getFakeHexCode, getInvalidColor } from '../src/factories/colorFactory.js';
-import { getInvalidSize } from '../src/factories/sizeFactory.js';
-import { getInvalidCategory } from '../src/factories/categoryFactory.js';
-import { getFakeUser } from '../src/factories/userFactory.js';
+import { getValidInsertionItemsBody } from './factories/itemsFactory.js';
+import { getFakeHexCode, getInvalidColor } from './factories/colorFactory.js';
+import { getInvalidSize } from './factories/sizeFactory.js';
+import { getInvalidCategory } from './factories/categoryFactory.js';
+import { getFakeUser } from './factories/userFactory.js';
 
 const db = makeDbFactory();
 const validBody = getValidInsertionItemsBody();

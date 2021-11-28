@@ -1,7 +1,7 @@
 import faker from 'faker';
-import { randomIntFromInterval } from '../utils/sharedFunctions.js';
+import { randomIntFromInterval } from '../../src/utils/sharedFunctions.js';
 import { generateValidGenderName } from './genderFactory.js';
-import generatePassword from '../utils/generatePassword.js'
+import generatePassword from '../../src/utils/generatePassword.js'
 
 function getFakeUser() {
     return {

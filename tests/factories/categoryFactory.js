@@ -1,5 +1,5 @@
 import faker from 'faker';
-import { randomIntFromInterval } from '../utils/sharedFunctions.js';
+import { randomIntFromInterval } from '../../src/utils/sharedFunctions.js';
 
 
 function getInvalidCategory(validBody) {

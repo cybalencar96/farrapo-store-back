@@ -2,9 +2,9 @@ import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
-import { getFakeUser, getFakeUuid } from '../src/factories/userFactory.js';
-import { getValidInsertionItemsBody } from '../src/factories/itemsFactory.js';
-import { getFakeHexCode } from '../src/factories/colorFactory.js';
+import { getFakeUser, getFakeUuid } from './factories/userFactory.js';
+import { getValidInsertionItemsBody } from './factories/itemsFactory.js';
+import { getFakeHexCode } from './factories/colorFactory.js';
 
 const db = makeDbFactory();
 
