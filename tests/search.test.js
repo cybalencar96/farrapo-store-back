@@ -3,8 +3,9 @@ import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
-import { getInvalidCategory, getFakeDate, getRandomNumberOfFiltersAndItens} from '../src/utils/faker.js';
-import { randomIntFromInterval } from '../src/utils/sharedFunctions.js';
+import { randomIntFromInterval, getRandomNumberOfFiltersAndItens } from '../src/utils/sharedFunctions.js';
+import { getInvalidCategory } from '../src/factories/categoryFactory.js';
+import { getFakeDate } from '../src/factories/userFactory.js';
 
 const db = makeDbFactory();
 const testVariables = getRandomNumberOfFiltersAndItens();

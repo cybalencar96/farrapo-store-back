@@ -3,12 +3,8 @@ import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
-import {
-    getFakeUser,
-    getInvalidFakeUser,
-    getFakeUuid,
-} from '../src/utils/faker.js';
 import generatePassword from '../src/utils/generatePassword.js';
+import { getFakeUser, getInvalidFakeUser, getFakeUuid } from '../src/factories/userFactory.js';
 
 const db = makeDbFactory();
 

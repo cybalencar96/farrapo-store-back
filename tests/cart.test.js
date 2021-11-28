@@ -1,10 +1,13 @@
 import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
-import faker from 'faker';
 import makeDbFactory from '../src/database/database.js';
-import { getValidInsertionItemsBody, getFakeHexCode } from '../src/utils/faker.js';
+import { getValidInsertionItemsBody } from '../src/factories/itemsFactory.js';
+import { getFakeHexCode } from '../src/factories/colorFactory.js';
+import { getFakeUuid } from '../src/factories/userFactory.js';
+
 const db = makeDbFactory();
+
 
 beforeAll(() => {
     jest.setTimeout(20 * 1000);
@@ -16,8 +19,8 @@ afterAll(() => {
 });
 
 describe('ENTITY CART', () => {
-    const invalidVisitorToken = faker.datatype.uuid();
-    const validVisitorToken = faker.datatype.uuid();
+    const invalidVisitorToken = getFakeUuid();
+    const validVisitorToken = getFakeUuid();
     const validBody = getValidInsertionItemsBody();
     const validBody2 = getValidInsertionItemsBody();
     const fakeHexCode = getFakeHexCode();
