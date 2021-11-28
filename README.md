@@ -42,6 +42,12 @@ A bazaar eCommerce to free space in your closet while winning some Benjamins ðŸ’
 
 ## **Getting Started**
 
+- Want to simply try it? Access demo by [clicking here](https://farrapo-store-front-git-main-cybalencar96.vercel.app/)!
+
+- Want to run frontend local not worrying with back? Learn how in README of farrapo-store-front repository by [clicking here](https://github.com/cybalencar96/farrapo-store-front)!
+
+- Want to run backend and front end local? Keep reading then!
+
 ### **Prerequisites**
 
 - npm
