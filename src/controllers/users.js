@@ -88,8 +88,11 @@ async function logOut(req, res) {
 }
 
 async function registerVisitor(req, res) {
+    const visitorToken = req.body.visitorToken;
+
     try {
-        await db.visitors.add(req.body.visitorToken);
+        await services.users.registerVisitor({ visitorToken });
+
         res.send();
     } catch (error) {
         console.log(error);

@@ -68,12 +68,19 @@ function makeUsersService(db, errorMessage, successMessage) {
         return successMessage();
     }
 
+    async function registerVisitor({ visitorToken }) {
+        await db.visitors.add(visitorToken);
+
+        return successMessage();
+    }
+
 
     return {
         signUp,
         signIn,
         getUserAuthenticated,
         logOut,
+        registerVisitor,
     }
 }
 
