@@ -1,9 +1,9 @@
 import '../src/setup.js';
 import supertest from 'supertest';
+import { v4 as uuid } from 'uuid';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
 import { getFakeUser, getValidInsertionItemsBody, getFakeHexCode } from '../src/utils/faker.js';
-
 const db = makeDbFactory();
 
 afterAll(() => {
@@ -46,7 +46,15 @@ describe('PURCHASE-HISTORY ENTITY', () => {
             createdAt: new Date(),
         });
 
-        addedPurchase = await db.purchaseHistory.add({userId: user.id, itemId: item.id, quantity: 1, price: item.price })
+        const purchaseToken = uuid();
+
+        addedPurchase = await db.purchaseHistory.add({
+            userId: user.id, 
+            itemId: item.id, 
+            quantity: 1, 
+            price: item.price, 
+            token: purchaseToken,
+        });
     });
 
     afterAll(async () => {

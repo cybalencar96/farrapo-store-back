@@ -1,3 +1,4 @@
+
 function makePurchaseHistoryService(db, errorMessage, successMessage) {
     async function getPurchaseHistory({ token }) {
         const history = await db.purchaseHistory.get(token);

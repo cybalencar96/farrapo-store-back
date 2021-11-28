@@ -1,8 +1,6 @@
-import makeDbFactory from '../database/database.js';
 import { areRawSearchParamsValid} from '../schemas/search.js';
 import { makeServices } from '../services/services.js';
 
-const db = makeDbFactory();
 const services = makeServices();
 
 async function getSearchItems(req, res) {

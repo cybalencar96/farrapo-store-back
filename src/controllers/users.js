@@ -1,8 +1,5 @@
-import bcrypt from 'bcrypt';
-import makeDbFactory from '../database/database.js';
 import { makeServices } from '../services/services.js';
 
-const db = makeDbFactory();
 const services = makeServices();
 
 async function signUp(req, res) {

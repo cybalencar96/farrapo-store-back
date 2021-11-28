@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 function makeCheckoutService(db, errorMessage, successMessage) {
     async function checkout({ cart, token }) {
         const userId = (await db.users.get("session", token))?.user_id;
@@ -20,7 +22,9 @@ function makeCheckoutService(db, errorMessage, successMessage) {
             }
         }
 
-        const purchaseToken = await db.purchaseHistory.addSeveral(userId, cart);
+        const purchaseToken = uuid();
+
+        await db.purchaseHistory.addSeveral(userId, cart, purchaseToken);
         await db.cart.deleteUserCart({clientType: "user", token: token});
         await db.items.updateQuantity(cart);
 

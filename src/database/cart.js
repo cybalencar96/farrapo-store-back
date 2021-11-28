@@ -1,5 +1,4 @@
 import connection from "./connection.js";
-import visitorsFactory from "./visitors.js";
 
 async function get(cartInfos = {}) {
     const {
