@@ -3,6 +3,7 @@ import { makeCartService } from './cart.js';
 import { makeCheckoutService } from './checkout.js';
 import { makeFiltersService } from './filters.js';
 import { makeItemsService } from './items.js';
+import { makePurchaseHistoryService } from './purchaseHistory.js';
 
 const db = makeDbFactory();
 
@@ -12,12 +13,14 @@ function makeServices() {
     const checkout = makeCheckoutService(db, errorMessage, successMessage);
     const filters = makeFiltersService(db, errorMessage, successMessage);
     const items = makeItemsService(db, errorMessage, successMessage);
-    
+    const purchaseHistory = makePurchaseHistoryService(db, errorMessage, successMessage);
+
     return {
         cart,
         checkout,
         filters,
         items,
+        purchaseHistory,
     }
 }
 

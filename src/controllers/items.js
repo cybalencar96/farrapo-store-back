@@ -1,8 +1,5 @@
-import makeDbFactory from '../database/database.js';
-import { areDuplicatesInArray, randomIntFromInterval} from '../utils/sharedFunctions.js';
 import { makeServices } from '../services/services.js';
 
-const db = makeDbFactory();
 const services = makeServices();
 
 async function getItems(req, res) {
