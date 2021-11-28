@@ -1,53 +1,20 @@
-import makeDbFactory from "../database/database.js";
+import { makeServices } from '../services/services.js';
 
-const db = makeDbFactory();
-
-function areItemObjectsEqual(receivedItem, savedItem) {
-    const atributesToCompare = ["itemId", "cartQty", "price", "maxQty"];
-    let areItemsEqual = true;
-    for (let i = 0; i < atributesToCompare.length; i++) {
-        const atribute = atributesToCompare[i];
-        if (receivedItem[atribute] !== savedItem[atribute]) {
-            areItemsEqual = false;
-            break
-        }
-    }
-    return areItemsEqual;
-}
+const services = makeServices();
 
 async function transferFromCartToHistory(req, res) {
     const {
         cart,
-        userData
     } = req.body;
 
     try {
-        const userId = (await db.users.get("session", res.locals.token))?.user_id;
-
-        if (!userId) {
-            return res.sendStatus(401);
+        const { body, error } = await services.checkout({cart, token: res.locals.token})
+        
+        if (error) {
+            return res.status(400).send(error.text);
         }
 
-        const savedCart = await db.cart.getCartFromUser({ userId });
-
-        if (cart.length !== savedCart.length) {
-            return res.sendStatus(400);
-        }
-
-        for (let i = 0; i < cart.length; i++) {
-            const receivedItem = cart[i];
-            const savedItem = savedCart.find(({ itemId }) => itemId === receivedItem.itemId);
-            if (!savedItem || !areItemObjectsEqual(receivedItem, savedItem)) {
-                return res.sendStatus(400);   
-            }
-        }
-
-        const token = await db.purchaseHistory.addSeveral(userId, cart);
-        await db.cart.deleteUserCart({clientType: "user", token: res.locals.token});
-        await db.items.updateQuantity(cart);
-
-
-        res.status(200).send({token});
+        res.status(200).send({ token: body });
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

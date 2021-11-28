@@ -3,12 +3,8 @@ import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
-import {
-    getFakeUser,
-    getInvalidFakeUser,
-    getFakeUuid,
-} from '../src/utils/faker.js';
 import generatePassword from '../src/utils/generatePassword.js';
+import { getFakeUser, getInvalidFakeUser, getFakeUuid } from '../src/factories/userFactory.js';
 
 const db = makeDbFactory();
 
@@ -42,12 +38,12 @@ describe('USERS ENTITY', () => {
             expect(result.status).toEqual(400);
         });
 
-        test('should return 409 when email exists', async () => {
+        test('should return 400 when email exists', async () => {
             const result = await supertest(app)
                 .post('/signup')
                 .send(fakeUser2);
 
-            expect(result.status).toEqual(409);
+            expect(result.status).toEqual(400);
         });
 
         test('should return 200 when user inserted', async () => {

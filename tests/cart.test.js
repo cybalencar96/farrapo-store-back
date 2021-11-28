@@ -1,10 +1,13 @@
 import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
-import faker from 'faker';
 import makeDbFactory from '../src/database/database.js';
-import { getValidInsertionItemsBody, getFakeHexCode } from '../src/utils/faker.js';
+import { getValidInsertionItemsBody } from '../src/factories/itemsFactory.js';
+import { getFakeHexCode } from '../src/factories/colorFactory.js';
+import { getFakeUuid } from '../src/factories/userFactory.js';
+
 const db = makeDbFactory();
+
 
 beforeAll(() => {
     jest.setTimeout(20 * 1000);
@@ -16,8 +19,8 @@ afterAll(() => {
 });
 
 describe('ENTITY CART', () => {
-    const invalidVisitorToken = faker.datatype.uuid();
-    const validVisitorToken = faker.datatype.uuid();
+    const invalidVisitorToken = getFakeUuid();
+    const validVisitorToken = getFakeUuid();
     const validBody = getValidInsertionItemsBody();
     const validBody2 = getValidInsertionItemsBody();
     const fakeHexCode = getFakeHexCode();
@@ -50,7 +53,7 @@ describe('ENTITY CART', () => {
 
         cartItem = await db.cart.addItem({
             itemId: fakeCreatedItem.id,
-            visitorToken: validVisitorToken,
+            visitorId: visitor.id,
             quantity: 1,
         });
     });
@@ -121,6 +124,7 @@ describe('ENTITY CART', () => {
                 userId: null,
                 userName: null
             }
+
             expect(result.status).toEqual(200);
             expect(result.body.length).toEqual(1);
             expect(result.body[0]).toEqual(expect.objectContaining(expectedObj));
@@ -165,7 +169,7 @@ describe('ENTITY CART', () => {
             expect(result.text).toEqual('send one id');
         });
 
-        test('should returns 409 item is already in cart', async () => {
+        test('should returns 400 when item is already in cart', async () => {
             const body = {
                 itemId: fakeCreatedItem.id,
                 visitorToken: validVisitorToken,
@@ -176,7 +180,8 @@ describe('ENTITY CART', () => {
                 .post('/cart')
                 .send(body);
             
-            expect(result.status).toEqual(409);
+            expect(result.status).toEqual(400);
+            expect(result.text).toEqual('item already in cart');
         });
 
         test('should return 200 when item inserted in cart', async () => {
@@ -241,22 +246,7 @@ describe('ENTITY CART', () => {
             expect(result.status).toEqual(401)
         });
 
-        test('should return 401 when ItemId is not in Database', async () => {
-            const body = {
-                clientType: "visitor",
-                token: validVisitorToken,
-                itemId: 1,
-                quantity: 2
-            }
-
-            const result = await supertest(app)
-                .put('/cart')
-                .send(body)
-
-            expect(result.status).toEqual(401)
-        });
-
-        test('should return 401 when updated Quantity is higher than available quantity', async () => {
+        test('should return 400 when updated Quantity is higher than available quantity', async () => {
             const body = {
                 clientType: "visitor",
                 token: validVisitorToken,
@@ -268,10 +258,11 @@ describe('ENTITY CART', () => {
                 .put('/cart')
                 .send(body)
 
-            expect(result.status).toEqual(401)
+            expect(result.status).toEqual(400)
+            expect(result.text).toEqual('item not found or quantity limit surpassed')
         });
 
-        test('should return 404 when item is not found in users cart', async () => {
+        test('should return 400 when item is not found in users cart', async () => {
             const body = {
                 clientType: "visitor",
                 token: validVisitorToken,
@@ -283,7 +274,7 @@ describe('ENTITY CART', () => {
                 .put('/cart')
                 .send(body)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 200 and updated Item when item is updated properly', async () => {
@@ -306,7 +297,6 @@ describe('ENTITY CART', () => {
                 .put('/cart')
                 .send(body)
 
-            
             expect(result.status).toEqual(200);
             expect(result.body).toEqual(expect.objectContaining(expectedBody));
         });
@@ -334,7 +324,7 @@ describe('ENTITY CART', () => {
             const result = await supertest(app)
                 .delete(`/cart/item/visitor&${validVisitorToken}&${fakeCreatedItem2.id}`)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 404 when asked user does not have a cart', async () => {
@@ -342,7 +332,7 @@ describe('ENTITY CART', () => {
             const result = await supertest(app)
                 .delete(`/cart/item/visitor&${invalidVisitorToken}&${fakeCreatedItem.id}`)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 200 and deleted Item when item is deleted properly', async () => {
@@ -385,7 +375,7 @@ describe('ENTITY CART', () => {
             const result = await supertest(app)
                 .delete(`/cart/all/visitor&${invalidVisitorToken}`)
 
-            expect(result.status).toEqual(404)
+            expect(result.status).toEqual(400)
         });
 
         test('should return 200 and deleted Item when item is deleted properly', async () => {

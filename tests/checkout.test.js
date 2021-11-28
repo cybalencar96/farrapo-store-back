@@ -3,8 +3,12 @@ import '../src/setup.js';
 import supertest from 'supertest';
 import app from '../src/app.js';
 import makeDbFactory from '../src/database/database.js';
-import { getValidInsertionItemsBody, getFakeHexCode, getInvalidColor, getInvalidSize, getInvalidCategory, getFakeUser, getFakeUuid, getValidCheckoutUserData} from '../src/utils/faker.js';
 import { randomIntFromInterval } from '../src/utils/sharedFunctions.js';
+import { getValidInsertionItemsBody } from '../src/factories/itemsFactory.js';
+import { getFakeHexCode, getInvalidColor } from '../src/factories/colorFactory.js';
+import { getInvalidSize } from '../src/factories/sizeFactory.js';
+import { getInvalidCategory } from '../src/factories/categoryFactory.js';
+import { getFakeUser, getFakeUuid, getValidCheckoutUserData } from '../src/factories/userFactory.js';
 
 const db = makeDbFactory();
 const validBody = getValidInsertionItemsBody();
@@ -107,7 +111,7 @@ describe('CheckOut ENTITY', () => {
             expect(result.status).toEqual(401);
         });
 
-        test('should return 401 if invalid token is sent', async () => {
+        test('should return 400 if invalid token is sent', async () => {
             const validBody = {
                 cart: [cartItem],
                 userData: validUserData
@@ -117,7 +121,7 @@ describe('CheckOut ENTITY', () => {
                 .post('/checkout').send(validBody)
                 .set('Authorization', `Bearer ${getFakeUuid()}`);
 
-            expect(result.status).toEqual(401);
+            expect(result.status).toEqual(400);
         });
 
         test('should return 400 if cart length does not match cart in database', async () => {

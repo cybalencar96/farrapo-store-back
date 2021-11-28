@@ -1,42 +1,26 @@
-import bcrypt from 'bcrypt';
-import makeDbFactory from '../database/database.js';
+import { makeServices } from '../services/services.js';
 
-const db = makeDbFactory();
+const services = makeServices();
 
 async function signUp(req, res) {
-    const {
-        email,
-        genderName,
-    } = req.body;
-
     try {
-        const user = await db.users.get('byEmail', email);
-        if (user) {
-            return res.status(409).send('email already exists');
+        const { body, error } = await services.users.signUp({ ...req.body })
+
+        if (error) {
+            return res.status(400).send(error.text);
         }
-
-        const gender = await db.genders.get(genderName);
-        if (!gender) {
-            return res.status(400).send('invalid genderName')
-        }
-
-
-        const addedUser = await db.users.add({
-            ...req.body,
-            genderId: gender.id,
-        });
 
         const structuredUser = {
-            id: addedUser.id,
-            name: addedUser.name,
-            email: addedUser.email,
-            zipCode: addedUser.zip_code,
-            streetNumber: addedUser.street_number,
-            complement: addedUser.complement,
-            phone: addedUser.phone,
-            genderName: addedUser.gender_name,
-            birthDate: addedUser.birth_date,
-            imageUrl: addedUser.image_url,
+            id: body.id,
+            name: body.name,
+            email: body.email,
+            zipCode: body.zip_code,
+            streetNumber: body.street_number,
+            complement: body.complement,
+            phone: body.phone,
+            genderName: body.gender_name,
+            birthDate: body.birth_date,
+            imageUrl: body.image_url,
         }
 
         return res.send(structuredUser);
@@ -47,16 +31,17 @@ async function signUp(req, res) {
 }
 
 async function signIn(req, res) {
-    const user = res.locals.user
+    const user = res.locals.user;
+
     try {
-        const token = await db.users.createSession(user.id);
+        const { body } = await services.users.signIn({ user });
 
         return res.send({
             id: user.id,
             name: user.name,
             email: user.email,
             image: user.image_url,
-            token,
+            token: body,
         });
     } catch (error) {
         console.log(error);
@@ -68,15 +53,16 @@ async function getUserAuthenticated(req, res) {
     const token = res.locals.token
 
     try {
-        const user = await db.users.get('session', token);
-        if (!user) {
-            return res.status(401).send('user not authenticated, try log in again');
-        }
+        const { body, error } = await services.users.getUserAuthenticated({ token });
 
+        if (error) {
+            return res.status(401).send(error.text);
+        }
+        
         return res.send({
-            id: user.user_id,
-            name: user.name,
-            email: user.email,
+            id: body.user_id,
+            name: body.name,
+            email: body.email,
             token,
         });
     } catch (error) {
@@ -89,13 +75,7 @@ async function logOut(req, res) {
     const token = res.locals.token
 
     try {
-        const user = await db.users.get('session', token);
-        if (!user) {
-            return res.sendStatus(304);
-        }
-
-        await db.cart.deleteUserCart({ clientType: "user", token});
-        await db.users.removeSessions('byToken', token);
+        await services.users.logOut({ token });
         
         return res.sendStatus(200);
     } catch (error) {
@@ -105,8 +85,11 @@ async function logOut(req, res) {
 }
 
 async function registerVisitor(req, res) {
+    const visitorToken = req.body.visitorToken;
+
     try {
-        await db.visitors.add(req.body.visitorToken);
+        await services.users.registerVisitor({ visitorToken });
+
         res.send();
     } catch (error) {
         console.log(error);

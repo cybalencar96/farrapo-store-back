@@ -1,12 +1,11 @@
 import connection from "./connection.js";
-import visitorsFactory from "./visitors.js";
 
 async function get(cartInfos = {}) {
     const {
         id,
         userId,
         itemId,
-        visitorToken,
+        visitorId,
     } = cartInfos;
 
     let query = 'SELECT * FROM cart WHERE 1=1 ';
@@ -21,12 +20,9 @@ async function get(cartInfos = {}) {
         return (await connection.query(query,[userId, itemId])).rows[0];
     }
     
-    if (visitorToken) {
-        const visitor = await visitorsFactory.get(visitorToken);
-
+    if (visitorId) {
         query += 'AND item_id = $1 AND visitor_id = $2';
-
-        const cartItem = await connection.query(query, [itemId, visitor?.id]);
+        const cartItem = await connection.query(query, [itemId, visitorId]);
 
         return cartItem.rows[0];
     }
@@ -37,18 +33,26 @@ async function addItem(cartInfos = {}) {
         userId,
         itemId,
         quantity,
-        visitorToken,
+        visitorId,
     } = cartInfos;
 
-    let visitor;
-    if (visitorToken) {
-        visitor = await visitorsFactory.get(visitorToken)
+    let clientId;
+    let clientColumn;
+
+    if (visitorId) {
+        clientId = visitorId;
+        clientColumn = 'visitor_id';
+    }
+
+    if (userId) {
+        clientId = userId;
+        clientColumn = 'user_id';
     }
 
     const result =  await connection.query(`
-        INSERT INTO cart (item_id, quantity, user_id, visitor_id) 
-        VALUES ($1, $2, $3, $4) RETURNING id
-    `,[itemId, quantity, userId, visitor?.id]);
+        INSERT INTO cart (item_id, quantity, ${clientColumn}) 
+        VALUES ($1, $2, $3) RETURNING id
+    `,[itemId, quantity, clientId]);
 
     const addedItem = await connection.query(`
         SELECT 

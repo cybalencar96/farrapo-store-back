@@ -8,7 +8,7 @@ CREATE TABLE "users" (
 	"complement" varchar(255),
 	"phone" varchar(20) NOT NULL,
 	"gender_id" integer NOT NULL DEFAULT '1',
-	"birth_date" DATE NOT NULL,
+	"birth_date" bigint NOT NULL,
 	"image_url" varchar(2048),
 	CONSTRAINT "users_pk" PRIMARY KEY ("id")
 ) WITH (

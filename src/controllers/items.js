@@ -1,7 +1,6 @@
-import makeDbFactory from '../database/database.js';
-import { areDuplicatesInArray, randomIntFromInterval} from '../utils/sharedFunctions.js';
+import { makeServices } from '../services/services.js';
 
-const db = makeDbFactory();
+const services = makeServices();
 
 async function getItems(req, res) {
     try {
@@ -9,10 +8,10 @@ async function getItems(req, res) {
             colors: req.query.color ? [req.query.color] : '',
             categories: req.query.category ? [req.query.category] : '',
         }
-        const items = await db.items.get({...adjustedQuery, limit: 20});
 
-        const structuredItems = items;
-        return res.send(structuredItems);
+        const { body } = await services.items.getItems({...adjustedQuery, limit: 20});
+
+        return res.send(body);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
@@ -23,12 +22,15 @@ async function getItem(req, res) {
     const id = req.params.id;
 
     try {
-        const item = await db.items.get({ id });
-        if (!item) return res.sendStatus(404);
+        const { body, error } = await services.items.getItem({ id });
         
+        if (error) {
+            return res.status(400).send(error.text);
+        }
+
         return res.status(200).send({
-            ...item,
-            categories: item.categories.split(',')
+            ...body,
+            categories: body.categories.split(',')
         });
     } catch (error) {
         console.log(error);
@@ -36,52 +38,13 @@ async function getItem(req, res) {
     }
 }
 
-async function addCategoryRandomItens(homepageItems, categories) {
-    for (let i = 0; i < categories.length; i++) {
-        const category = categories[i];
-        const itemsForSelectedCategory = await db.items.get({ categories: [category], limit: 10 });
-        homepageItems.push({
-            title: category,
-            forwardMessage: "Quero ver mais!",
-            type: "categories",
-            itens: itemsForSelectedCategory
-        });
-    }
-    return;
-}
-
 async function getHomepageItems(req, res) {
 
     try {
         const token = req.headers.authorization?.split("Bearer ")[1];
-        let loggedUserData = {maximumPrice: "", mostPopularColor: "", categories: [] }
-        if (!!token) {
-            loggedUserData = await db.purchaseHistory.getHistoryForHomepage(token);
-        }
-        const maximumPrice = loggedUserData.maximumPrice ? loggedUserData.maximumPrice : randomIntFromInterval(3, 8) * 10;
-        const selectedColor = loggedUserData.mostPopularColor ? loggedUserData.mostPopularColor : (await db.colors.get({ randomColor: true }))?.name;
-        const selectedCategories = [...loggedUserData.categories];
-        if (selectedCategories.length < 3) {
-            const randomCategories = (await db.categories.get({ randomCategory: true, limit: 3 })).map( ({name}) => name);
-            for (let i = 0; i < randomCategories.length; i++) {
-                const categoryToBeAdded = randomCategories[i];
-                if (!selectedCategories.includes(categoryToBeAdded)) {
-                    selectedCategories.push(categoryToBeAdded);
-                }
-                if (selectedCategories.length === 3) break;
-            }
-        }
-        const itensForMaximumPrice = await db.items.get({ maximumPrice, limit: 10 });
-        const itensForSelectedColor = await db.items.get({ colors: [selectedColor], limit: 10 });
+        const { body } = await services.items.getHomepageItems({ token });
 
-        const homepageItems = [
-            { title: `Até R$${maximumPrice},00`, forwardMessage: "Que pechincha!", type: "price", itens: itensForMaximumPrice },
-            { title: `Que tal um pouco de ${selectedColor.toLowerCase()}`, type: "colors", forwardMessage: "Quero ver mais!", itens: itensForSelectedColor },
-        ]
-
-        await addCategoryRandomItens(homepageItems, selectedCategories);
-        
-        return res.send(homepageItems);
+        return res.send(body);
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
@@ -89,33 +52,14 @@ async function getHomepageItems(req, res) {
 }
 
 async function addItems(req, res) {
-
-    const {
-        colorName,
-        sizeName,
-        categories,
-    } = req.body;
-    
-    const isColorInDatabase = await db.colors.get({colorName});
-    if (!isColorInDatabase) {
-        return res.status(404).send("Sent colorName is not valid");
-    }
-
-    const isSizeInDatabase = await db.sizes.get(sizeName);
-    if (!isSizeInDatabase) {
-        return res.status(404).send("Sent sizeName is not valid");
-    }
-
-    const categoriesInDatabase = await db.categories.get({categories});
-    if (areDuplicatesInArray(categories) || categoriesInDatabase.length !== categories.length) {
-        return res.status(404).send("Sent categories are not valid");
-    }
-    
-    const createdAt = new Date();
-
     try {
-        await db.items.add({...req.body, createdAt});
-        return res.sendStatus(201);
+        const { error } = await services.items.addItems(req.body);
+
+        if (error) {
+            return res.status(400).send(error.text);
+        }
+
+         return res.sendStatus(201);
 
     } catch (error) {
         console.log(error);
