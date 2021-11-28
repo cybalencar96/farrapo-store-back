@@ -17,15 +17,15 @@ describe('Search ENTITY', () => {
         await db.colors.add(testVariables.colors);
         await db.sizes.add(testVariables.sizes);
         await db.categories.add(testVariables.categories);
-        testVariables.items.forEach(async (item) => {
+
+        await Promise.all(testVariables.items.map(item => {
             const createdAt = getFakeDate();
             itemsWithCreatedAt.push({...item, createdAt})
-            await db.items.add({
+            return db.items.add({
                 ...item,
                 createdAt
             });
-        })
-        
+        }));
     });
 
     afterAll(async () => {
@@ -87,7 +87,7 @@ describe('Search ENTITY', () => {
         test('if no filter is sent, should return status 200 and every Item in database', async () => {
             const result = await supertest(app)
                 .get(`/search/---&---&---&---&---&---`)
-            
+
             expect(result.status).toEqual(200);
             expect(result.body.length).toEqual(testVariables.items.length);
         });
