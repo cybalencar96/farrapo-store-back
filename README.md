@@ -1,7 +1,7 @@
 <br />
 <p align="center">
   <a href="/">
-    <img src="https://github.com/cybalencar96/gratibox-front/blob/main/public/farrapo-logo?raw=true" alt="Logo" width="200px" height="auto">
+    <img src="https://github.com/cybalencar96/gratibox-front/blob/main/public/farrapo-logo?raw=true" alt="Logo" width="90px" height="auto">
   </a>
 
 <h3 align="center">Farrapo Store</h3>
@@ -22,7 +22,7 @@
 
 <br />
 <p align="center">
-<img src="https://github.com/cybalencar96/farrapo-store-front/blob/main/public/farrapo-gif.gif?raw=true" width="300px">
+<img src="https://github.com/cybalencar96/farrapo-store-front/blob/main/public/farrapo-gif.gif?raw=true" width="600px">
 <p>
 
 <br />
