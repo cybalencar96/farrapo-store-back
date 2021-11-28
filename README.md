@@ -46,7 +46,7 @@ A bazaar eCommerce to free space in your closet while winning some Benjamins ðŸ’
 
 - Want to run frontend local not worrying with back? Learn how in README of farrapo-store-front repository by [clicking here](https://github.com/cybalencar96/farrapo-store-front)!
 
-- Want to run backend and front end local? Keep reading then!
+- Want to run backend local? Keep reading then!
 
 ### **Prerequisites**
 
@@ -68,25 +68,7 @@ git clone https://github.com/cybalencar96/farrapo-store-back.git
 npm i
 ```
 
-3. Clone frontend repo **in a different folder**
-
-```sh
-git clone https://github.com/cybalencar96/farrapo-store-front.git
-```
-
-4. Install frontend dependencies executing command in root
-
-```sh
-npm i
-```
-
-5. Create a .env.development file in frontend root folder with following variable and value
-
-```sh
-REACT_APP_SERVER_URL=http://localhost:4000
-```
-
-6. Create a .env.dev file in backend root folder with following variable
+3. Create a .env.dev file in backend root folder with URI of dev database
 ```sh
 DATABASE_URL=postgres://dahjxwlhwetibg:a3d0c849a074716c3575197579de96a0cc25e256044ee255b535ed50cf499fb1@ec2-34-232-144-162.compute-1.amazonaws.com:5432/d6rvvg3h234b42
 ```
@@ -96,14 +78,6 @@ DATABASE_URL=postgres://dahjxwlhwetibg:a3d0c849a074716c3575197579de96a0cc25e2560
 
 ### **How to run**
 
-1. Start backend server
-
 ```sh
 npm run dev
-```
-
-2. Start frontend
-
-```sh
-npm start
 ```
